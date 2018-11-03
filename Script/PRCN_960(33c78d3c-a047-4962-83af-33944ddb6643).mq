@@ -1,0 +1,146 @@
+Randomize
+Dim intX,intY,targetX,targetY
+Dim tempBool
+Dim lastTapTime
+'960p
+'-----------------------------------------------------------------------------------------
+'-----------------------------------------------------------------------------------------
+// Main Loop
+Dim curPage
+curPage = ""
+Dim schedule 'simBattleExp
+schedule = "simBattleExp"
+LastTapTime = TickCount()
+While True
+	//work
+	
+	'BattleLoop
+	BattleLoop(1000)
+
+	'global
+	'PlayerLV UP
+	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "Attachment:MsgboxLevelUp.png", 400, 360, 561, 380
+	'StorySkip
+	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "Attachment:BtnStorySkip..png"
+	'TeamBattleCpFull
+	TapRangeIfFindPic 427,82,427+108,82+9, "Attachment:MsgboxTeamBattleCpFull_427_82..png", 296,420,454,448
+
+	DelayRnd 900,200
+Wend
+EndScript
+
+Function BattleLoop(openDelay)
+	'win page -> tap Btn:nextPage
+	TapRangeIfFindPic 820, 30, 820 + 70, 30 + 10, "Attachment:BtnBattleReport..png", 720, 483, 895, 505
+	
+	'battle result(show items list) -> tap Btn:battleAgain
+	TapRangeIfFindPic 623, 483, 623 + 77, 483 + 14, "Attachment:BtnBattleAgain..png", 597, 479, 725, 502
+	'Msg:check battle again -> tap Btn:Yes
+	TapRangeIfFindPic 422,139,422+116,139+14, "Attachment:MsgboxBattleAgainCheck..png",503,359,669,381
+End Function
+
+'-----------------------------------------------------------------------------------------
+'schedule LevelConfig
+'schedule Selector
+Function RunScheduleEvent(eventNumber)
+	Select Case eventNumber
+	Case 1
+	
+	Case Else
+	
+	End Select
+End Function
+'schedule RegEvent(time,runCount)
+Function RegEventIfFindPic(eventNumber,keepTime)
+	If intX > -1 And intY > -1 Then
+		RegEventIfLastPicHasFind = True
+		
+	End If
+End Function
+Function RegEvent(eventNumber,keepTime)
+	If intX > -1 And intY > -1 Then
+		RegEventIfLastPicHasFind = True
+		
+	End If
+End Function
+
+
+'-----------------------------------------------------------------------------------------
+Function FindPicFunc(x1,y1,x2,y2,picName)
+	FindPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
+	If intX > -1 And intY > -1 Then
+		FindPicFunc = True
+	End If
+End Function
+'not used
+Function TapIfFindATTPic(x1,y1,x2,y2,picSimpleName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, "Attachment:" + picSimpleName + "..png")
+	TapIfFindAtPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picSimpleName
+		TapFind
+	End If
+End Function
+Function TapIfFindPic(x1,y1,x2,y2,picName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapFind
+	End If
+End Function
+Function ShiftTapIfFindPic(x1,y1,x2,y2,picName,shiftX,shiftY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	ShiftTapIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapXy(shiftX + intX,shiftY + intY)
+	End If
+End Function
+Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapRangeIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapRange(tapX1,tapY1,tapX2,tapY2)
+	End If
+End Function
+
+
+Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapXyIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapXy(tapX,tapY)
+	End If
+End Function
+Function TapIfFind
+	TapIfFind = False
+	If intX > -1 And intY > -1 Then
+		TapFind
+		TapIfFind = True
+	End If
+End Function
+Sub TapFind
+	TapXy intX,intY
+End Sub
+Sub TapRange(tapX1,tapY1,tapX2,tapY2)
+	targetX = tapX1 + (tapX2-tapX1) * Rnd()
+	targetY = tapY1 + (tapY2 - tapY1) * Rnd()
+	TapXy targetX,targetY
+End Sub
+Sub TapXy(tapX, tapY)
+	targetX = tapX + 5 * Rnd()
+	targetY = tapY + 5 * Rnd()
+	Delay 10 + Sqr(TickCount()-lastTapTime) * Rnd()
+	Tap targetX, targetY
+	lastTapTime = TickCount()
+	TracePrint "Tap " & targetX & "," & targetY
+	Delay 10 + 15 * Rnd()
+End Sub
+
+Sub DelayRnd(BaseDelay,RndDelay)
+	Delay BaseDelay + RndDelay*Rnd()
+End Sub

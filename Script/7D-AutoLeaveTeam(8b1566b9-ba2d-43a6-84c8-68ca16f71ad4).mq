@@ -1,0 +1,122 @@
+Randomize
+Dim intX,intY,targetX,targetY
+Dim tempBool
+'-----------------------------------------------------------------------------------------
+Dim AutoLeaveTeam
+Dim ExamPhace2
+'-----------------------------------------------------------------------------------------
+' Main Loop
+HelloWorld 
+AutoLeaveTeam = True
+'ExamPhace2 = True
+
+
+While True
+	//SubScript AutoLeaveTeam
+	If AutoLeaveTeam Then
+		TapIfFindPic 448,63,509,98,"Attachment:title_sub_AllWin.png"
+		TapIfFindPic 431,464,527,491,"Attachment:btn_sub_exitTeam..png"
+		TapIfFindPic 577, 340, 624, 361, "Attachment:btn_sub_ExitTeamConfirm..png"
+	End If
+	If ExamPhace2 Then 
+		ShiftTapIfFindPic 296, 229, 470, 259, "Attachment:msg_battlePickNotFull..png", 52, 108
+		If intX > -1 And intY > -1 Then 
+			Delay 3000
+			TapXy 67,158
+			Delay 3000
+			TapXy 176,158
+			Delay 3000
+			TapXy 67,256
+			Delay 3000
+			TapXy 849,486
+			Delay 3000
+		Else 
+			'battle btn   
+			TapXy 869,458  'c1 atk
+			TapXy 752,481  'c1 sk1
+			TapXy 869,458  'c1 atk
+			TapXy 760,371  'c1 sk2
+			TapXy 869,458  'c1 atk
+			TapXy 866,312  'c1 sk3
+			TapXy 869,458  'c1 atk
+			TapXy 674,477  'c2 sk3
+			TapXy 869,458  'c1 atk
+			TapXy 594,476  'c3 sk3
+			'new monster check
+			TapIfFindPic 456,451,506,468,"Attachment:msg_battleNewMonsterConfirm..png"
+		End If
+		
+		
+	End If
+	
+	//SubScript MatchCenterSubScript
+	//ShiftTapIfFindPic 419, 116, 453, 140, "Attachment:btn_centerSub_lastTime..png", 62, 63
+	//SubScript CreateTeam And Match
+	//TapIfFindPic 830,435,871,456,"Attachment:btn_sub_createTeam..png"
+	//TapIfFindPic 838,483,876,501,"Attachment:btn_sub_startMatch..png"
+	
+	Delay 1000
+Wend
+EndScript
+'-----------------------------------------------------------------------------------------
+
+Function FindPicFunc(x1,y1,x2,y2,picName)
+	FindPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
+	If intX > -1 And intY > -1 Then
+		FindPicFunc = True
+	End If
+End Function
+Function TapIfFindAtPic(x1,y1,x2,y2,picName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, "Attachment:" + picName + "..png")
+	TapIfFindAtPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapFind
+	End If
+End Function
+Function TapIfFindPic(x1,y1,x2,y2,picName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapFind
+	End If
+End Function
+Function ShiftTapIfFindPic(x1,y1,x2,y2,picName,shiftX,shiftY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	ShiftTapIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapXy(shiftX + intX,shiftY + intY)
+	End If
+End Function
+Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapXyIfFindPic = tempBool
+	If tempBool Then
+		TracePrint "Find " & picName
+		TapXy(tapX,tapY)
+	End If
+End Function
+Function TapIfFind
+	TapIfFind = False
+	If intX > -1 And intY > -1 Then
+		TapFind
+		TapIfFind = True
+	End If
+End Function
+Sub TapFind
+	TapXy intX,intY
+End Sub
+Sub TapXy(tapX,tapY)
+	targetX = tapX + 5 * Rnd()
+	targetY = tapY + 5 * Rnd()
+	Tap targetX, targetY
+	TracePrint "Tap " & targetX & "," & targetY
+	Delay 10 + 15 * Rnd()
+End Sub
+
+Sub HelloWorld
+	TracePrint "TestMessage"
+End Sub
