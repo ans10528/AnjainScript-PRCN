@@ -4,68 +4,166 @@ Dim tempBool
 Dim lastTapTime
 '960p
 '-----------------------------------------------------------------------------------------
+'Script Scheduler
+
+
+
+'-----------------------------------------------------------------------------------------
+'-----------------------------------------------------------------------------------------
+'Event 
+
+
+
 '-----------------------------------------------------------------------------------------
 // Main Loop
 Dim curPage
 curPage = ""
-Dim schedule 'simBattleExp
-schedule = "simBattleExp"
+
+Dim scriptMode 'simBattleExp
+scriptMode = "simBattleExp"
+
 LastTapTime = TickCount()
+
 While True
 	//work
+	'TestCode
+	Dungeon
+
 	
-	'BattleLoop
-	BattleLoop(1000)
+	'--------
+	
+	'BattleEnd
+	WinPage_Tap_NextPageBtn
+	ResultItemsPage_Tap_BattleAgainBtn
+	CheckBattleAgainMsgbox_Tap_YesBtn
 
-	'global
-	'PlayerLV UP
-	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "Attachment:MsgboxLevelUp.png", 400, 360, 561, 380
-	'StorySkip
-	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "Attachment:BtnStorySkip..png"
-	'TeamBattleCpFull
-	TapRangeIfFindPic 427,82,427+108,82+9, "Attachment:MsgboxTeamBattleCpFull_427_82..png", 296,420,454,448
-
+	'Global
+	PlayerLvUpMsgbox
+	StorySkip
+	ClanBattleCpCountMsgbox 
+	
 	DelayRnd 900,200
 Wend
 EndScript
 
-Function BattleLoop(openDelay)
-	'win page -> tap Btn:nextPage
-	TapRangeIfFindPic 820, 30, 820 + 70, 30 + 10, "Attachment:BtnBattleReport..png", 720, 483, 895, 505
-	
-	'battle result(show items list) -> tap Btn:battleAgain
-	TapRangeIfFindPic 623, 483, 623 + 77, 483 + 14, "Attachment:BtnBattleAgain..png", 597, 479, 725, 502
-	'Msg:check battle again -> tap Btn:Yes
-	TapRangeIfFindPic 422,139,422+116,139+14, "Attachment:MsgboxBattleAgainCheck..png",503,359,669,381
-End Function
-
 '-----------------------------------------------------------------------------------------
-'schedule LevelConfig
+'-------------------------------------- Scheduler ----------------------------------------
+'schedule Config
+'  first run delay - config
+'  scan Frequency - inCode?
+'  keepTime(Effective time/Live time) - config
+'  success Delay - inCode
+
 'schedule Selector
-Function RunScheduleEvent(eventNumber)
-	Select Case eventNumber
+Function RunSchedule_ScriptSelector(scriptNumber)
+	Select Case scriptNumber
+	Case 0
+		Exit Function
 	Case 1
 	
 	Case Else
 	
 	End Select
 End Function
-'schedule RegEvent(time,runCount)
-Function RegEventIfFindPic(eventNumber,keepTime)
+'schedule RegScript(time,runCount)
+Function RegScriptIfFindPic(scriptNumber,keepTime)
 	If intX > -1 And intY > -1 Then
-		RegEventIfLastPicHasFind = True
+		RegScriptIfFindPic = True
 		
 	End If
 End Function
-Function RegEvent(eventNumber,keepTime)
-	If intX > -1 And intY > -1 Then
-		RegEventIfLastPicHasFind = True
-		
-	End If
+Function RegScript(scriptNumber, keepTime)
+
 End Function
 
 
 '-----------------------------------------------------------------------------------------
+'---------------------------------------- Script -----------------------------------------
+
+
+
+
+
+'Unschedulable script ----------
+Function Dungeon
+	If DungeonPage() And FindFuzzyPicFunc(304, 200, 594, 386, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+		TapIfFind 
+		Delay 300
+	End If
+	If DungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+		TapIfFind 
+		Delay 300
+	End If
+	If DungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest2_+10,10..png", 0.7) Then 
+		TapIfFind 
+		Delay 300
+	End If
+	If DungeonPage() And FindFuzzyPicFunc(481,171,712,369, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+		TapIfFind 
+		Delay 300
+	End If
+	
+	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "Attachment:PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
+	
+	FindPicFunc 439,34,518,51, "Attachment:PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
+	If PicHasFind() Then 
+		'check member is full
+		
+		If Not FindPicFunc(53,451,78,502, "Attachment:Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
+			TapRange 786, 444, 893, 462
+		Else 
+			'delay 5~10s
+			DelayRnd 5000,5000
+		End If
+	End If
+	
+	TapRangeIfFindPic 441,33,505,52, "Attachment:Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398,471,546,487
+End Function
+
+Function CharacterStory
+'TODO List:
+	'Detect New Story Page
+	'Select Char
+	'Select New Story
+	'Skip *Global storyskip
+	'If No new stroy, return to previous page
+End Function
+
+'-----------------------------------------------------------------------------------------
+'----------------------------------- Action Function -------------------------------------
+'find a feature and tap something at once
+
+'Dungeon ------------
+Function DungeonPage
+	DungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "Attachment:PageFeature_Dungeon_491,427+116,14..png")
+End Function
+
+'BattleEnd ----------
+Function WinPage_Tap_NextPageBtn
+	WinPage_Tap_NextPageBtn = TapRangeIfFindPic(820, 30, 820 + 70, 30 + 10, "Attachment:BtnBattleReport..png", 720, 483, 895, 505)
+End Function
+Function ResultItemsPage_Tap_BattleAgainBtn
+	ResultItemsPage_Tap_BattleAgainBtn = TapRangeIfFindPic (623, 483, 623 + 77, 483 + 14, "Attachment:BtnBattleAgain..png", 597, 479, 725, 502)
+End Function
+Function CheckBattleAgainMsgbox_Tap_YesBtn
+	CheckBattleAgainMsgbox_Tap_YesBtn = TapRangeIfFindPic (422, 139, 422 + 116, 139 + 14, "Attachment:MsgboxBattleAgainCheck..png", 503, 359, 669, 381)
+End Function
+
+'Global -------------
+Function PlayerLvUpMsgbox
+	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "Attachment:MsgboxLevelUp.png", 400, 360, 561, 380
+End Function
+Function StorySkip
+	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "Attachment:BtnStorySkip..png"
+End Function
+Function ClanBattleCpCountMsgbox
+	TapRangeIfFindPic 427,82,427+108,82+9, "Attachment:MsgboxTeamBattleCpFull_427_82..png", 296,420,454,448
+End Function
+
+
+
+'-----------------------------------------------------------------------------------------
+'------------------------------------- anjain API ----------------------------------------
 Function FindPicFunc(x1,y1,x2,y2,picName)
 	FindPicFunc = False
 	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
@@ -73,10 +171,24 @@ Function FindPicFunc(x1,y1,x2,y2,picName)
 		FindPicFunc = True
 	End If
 End Function
-'not used
-Function TapIfFindATTPic(x1,y1,x2,y2,picSimpleName)
+Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,fuzzyRate)
+	FindFuzzyPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 1, fuzzyRate, intX, intY
+	If intX > -1 And intY > -1 Then
+		FindFuzzyPicFunc = True
+	End If
+End Function
+Function PicHasFind()
+	PicHasFind = False
+	If intX > -1 And intY > -1 Then
+		PicHasFind = True
+	End If
+End Function
+
+'not used     ATC=Attachment
+Function TapIfFindATCPic(x1,y1,x2,y2,picSimpleName)
 	tempBool = FindPicFunc(x1, y1, x2, y2, "Attachment:" + picSimpleName + "..png")
-	TapIfFindAtPic = tempBool
+	TapIfFindATCPic = tempBool
 	If tempBool Then
 		TracePrint "Find " & picSimpleName
 		TapFind
@@ -141,6 +253,11 @@ Sub TapXy(tapX, tapY)
 	Delay 10 + 15 * Rnd()
 End Sub
 
+Sub PrintIfFind(msgStr)
+	If intX > -1 And intY > -1 Then
+		TracePrint msgStr
+	End If
+End Sub
 Sub DelayRnd(BaseDelay,RndDelay)
 	Delay BaseDelay + RndDelay*Rnd()
 End Sub
