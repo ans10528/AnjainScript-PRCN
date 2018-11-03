@@ -117,25 +117,40 @@ Function Dungeon
 		End If
 	End If
 	
-	TapRangeIfFindPic 441,33,505,52, "Attachment:Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398,471,546,487
+	TapRangeIfFindPic 441, 33, 505, 52, "Attachment:Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398, 471, 546, 487
 End Function
 
 Function ClearNewCharacterStory
-	If IsCharacterStoryPage_NewTag() Then 
-		'Tap First Character
-		TapRange 496, 95, 783, 159
+
+	If IsStoryPage() Then 
+		'Character Story
+		If IsCharacterStoryPage_NewTag() Then 
+			'Tap First Character
+			TapRange 496, 95, 783, 159
+		End If
+		
+		If IsCharacterStoryDetailPage() Then 
+			If IsNoNewCharacterRankStory() Then 
+				'Tap prePage
+				TapRange 25, 24, 47, 44
+			Else
+				'Tap Last Story
+				TapRange 560, 198, 848, 211
+			End If
+		End If
+		
+		'Other Story
+		'NewestNewStory (pic from GiRuTo Story)
+		TapRangeIfFindPic 481, 133, 528, 141, "Attachment:Feature_NewestNewStory_481,133,528,141..png", 501, 154, 849, 225
+		'NewStory (pic from Event Story)
+		TapRangeIfFindPic 481, 190, 528, 198, "Attachment:Feature_NewStory_481,190,528,198..png", 494, 211, 871, 280
+		'LastNewStory (pic form Event Story)
+		TapRangeIfFindPic 481, 74, 528, 81, "Attachment:Feature_LastNewStory_481,74,528,81..png", 497, 107, 816, 165
+		
+		
 	End If
 	
-	If IsCharacterStoryDetailPage() Then 
-		If IsNoNewCharacterRankStory() Then 
-			'Tap prePage
-			TapRange 25, 24, 47, 44
-			TracePrint "123"
-		Else
-			'Tap Last Story
-			'TapRange 560, 198, 848, 211
-		End If
-	End If
+	'Global -------
 	
 	StoryVoiceDownload_Tap_NoVoice 
 	
@@ -150,7 +165,12 @@ Function ClearNewCharacterStory
 	TapRangeIfFindPic 441, 138, 515, 153, "Attachment:Msgbox_StoryBrief_441,138,515,153..png", 516, 362, 671, 385
 	
 	'Msgbox_ConfirmReward
-	TapRangeIfFindPic 440,33,515,51, "Attachment:Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", 417,466,556,494
+	TapRangeIfFindPic 440, 33, 515, 51, "Attachment:Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", 417, 466, 556, 494
+	'Msgbox GiRuTo Story Confirm Reward
+	TapRangeIfFindPic 439, 78, 518, 95, "Attachment:Msgbox_GirutoStoryConfirmReward_439,78,518,95..png", 412, 421, 556, 448
+	
+	
+	'TODO: In battle Conversation AutoTap
 End Function
 
 '-----------------------------------------------------------------------------------------
@@ -159,6 +179,9 @@ End Function
 
 
 'Story ------------
+Function IsStoryPage
+	IsStoryPage = FindPicFunc(321, 522, 352, 534, "Attachment:PageFeature_Story_321,522,352,534..png")
+End Function
 Function IsCharacterStoryPage_NewTag
 	IsCharacterStoryPage_NewTag = FindPicFunc(477,24,535,44, "Attachment:Feature_NewCharStory_477,24,535,44..png")	
 End Function
@@ -170,8 +193,7 @@ Function IsNoNewCharacterRankStory
 	Dim NoNewRankNStory
 	NoNewRank8Story = FindPicFunc(482, 137, 514, 140, "Attachment:Feature_NoNewCharacterStory_482,137,514,140..png")
 	NoNewRankNStory = FindPicFunc(480, 194, 507, 197, "Attachment:Feature_NoNewCharacterStory_480,194,507,197..png")
-	'TODO:   I cant test this because no new story.   If not work   Change "And" to "Or"
-	IsNoNewCharacterRankStory = NoNewRank8Story And NoNewRankNStory
+	IsNoNewCharacterRankStory = NoNewRank8Story Or NoNewRankNStory
 End Function
 Function StoryVoiceDownload_Tap_NoVoice
 	TapRangeIfFindPic(420,139,537,155, "Attachment:Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
