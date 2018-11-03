@@ -28,7 +28,7 @@ While True
 	//work
 	'TestCode
 	Dungeon
-
+	ClearNewCharacterStory
 	
 	'--------
 	
@@ -39,7 +39,7 @@ While True
 
 	'Global
 	PlayerLvUpMsgbox
-	StorySkip
+	HeartStorySkip
 	ClanBattleCpCountMsgbox 
 	
 	DelayRnd 900,200
@@ -86,19 +86,19 @@ End Function
 
 'Unschedulable script ----------
 Function Dungeon
-	If DungeonPage() And FindFuzzyPicFunc(304, 200, 594, 386, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+	If IsDungeonPage() And FindFuzzyPicFunc(304, 200, 594, 386, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
 		TapIfFind 
 		Delay 300
 	End If
-	If DungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+	If IsDungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
 		TapIfFind 
 		Delay 300
 	End If
-	If DungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest2_+10,10..png", 0.7) Then 
+	If IsDungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest2_+10,10..png", 0.7) Then 
 		TapIfFind 
 		Delay 300
 	End If
-	If DungeonPage() And FindFuzzyPicFunc(481,171,712,369, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
+	If IsDungeonPage() And FindFuzzyPicFunc(481,171,712,369, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
 		TapIfFind 
 		Delay 300
 	End If
@@ -120,22 +120,72 @@ Function Dungeon
 	TapRangeIfFindPic 441,33,505,52, "Attachment:Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398,471,546,487
 End Function
 
-Function CharacterStory
-'TODO List:
-	'Detect New Story Page
-	'Select Char
-	'Select New Story
-	'Skip *Global storyskip
-	'If No new stroy, return to previous page
+Function ClearNewCharacterStory
+	If IsCharacterStoryPage_NewTag() Then 
+		'Tap First Character
+		TapRange 496, 95, 783, 159
+	End If
+	
+	If IsCharacterStoryDetailPage() Then 
+		If IsNoNewCharacterRankStory() Then 
+			'Tap prePage
+			TapRange 25, 24, 47, 44
+			TracePrint "123"
+		Else
+			'Tap Last Story
+			'TapRange 560, 198, 848, 211
+		End If
+	End If
+	
+	StoryVoiceDownload_Tap_NoVoice 
+	
+	If IsInTheStory() Then 
+		InTheStory_Tap_Skip 
+		If Not PicHasFind() Then 
+			TapRange 904,30,930,54
+		End If
+	End If
+	
+	'Msgbox_StoryBrief
+	TapRangeIfFindPic 441, 138, 515, 153, "Attachment:Msgbox_StoryBrief_441,138,515,153..png", 516, 362, 671, 385
+	
+	'Msgbox_ConfirmReward
+	TapRangeIfFindPic 440,33,515,51, "Attachment:Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", 417,466,556,494
 End Function
 
 '-----------------------------------------------------------------------------------------
 '----------------------------------- Action Function -------------------------------------
 'find a feature and tap something at once
 
+
+'Story ------------
+Function IsCharacterStoryPage_NewTag
+	IsCharacterStoryPage_NewTag = FindPicFunc(477,24,535,44, "Attachment:Feature_NewCharStory_477,24,535,44..png")	
+End Function
+Function IsCharacterStoryDetailPage
+	IsCharacterStoryDetailPage = FindPicFunc(566,43,608,54, "Attachment:Feature_Story_CharacterDetail_566,43,608,54..png")
+End Function
+Function IsNoNewCharacterRankStory
+	Dim NoNewRank8Story
+	Dim NoNewRankNStory
+	NoNewRank8Story = FindPicFunc(482, 137, 514, 140, "Attachment:Feature_NoNewCharacterStory_482,137,514,140..png")
+	NoNewRankNStory = FindPicFunc(480, 194, 507, 197, "Attachment:Feature_NoNewCharacterStory_480,194,507,197..png")
+	'TODO:   I cant test this because no new story.   If not work   Change "And" to "Or"
+	IsNoNewCharacterRankStory = NoNewRank8Story And NoNewRankNStory
+End Function
+Function StoryVoiceDownload_Tap_NoVoice
+	TapRangeIfFindPic(420,139,537,155, "Attachment:Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
+End Function
+Function IsInTheStory
+	IsInTheStory = FindPicFunc(931,55,903,29, "Attachment:Btn_StoryMenu_931,55,903,29..png")
+End Function
+Function InTheStory_Tap_Skip
+	TapIfFindPic(793,29,819,60, "Attachment:Btn_InTheStoryMenu_Skip_793,29,819,60..png")
+End Function
+
 'Dungeon ------------
-Function DungeonPage
-	DungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "Attachment:PageFeature_Dungeon_491,427+116,14..png")
+Function IsDungeonPage
+	IsDungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "Attachment:PageFeature_Dungeon_491,427+116,14..png")
 End Function
 
 'BattleEnd ----------
@@ -153,7 +203,7 @@ End Function
 Function PlayerLvUpMsgbox
 	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "Attachment:MsgboxLevelUp.png", 400, 360, 561, 380
 End Function
-Function StorySkip
+Function HeartStorySkip
 	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "Attachment:BtnStorySkip..png"
 End Function
 Function ClanBattleCpCountMsgbox
@@ -161,20 +211,21 @@ Function ClanBattleCpCountMsgbox
 End Function
 
 
-
 '-----------------------------------------------------------------------------------------
 '------------------------------------- anjain API ----------------------------------------
 Function FindPicFunc(x1,y1,x2,y2,picName)
 	FindPicFunc = False
 	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
-	If intX > -1 And intY > -1 Then
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & picName
 		FindPicFunc = True
 	End If
 End Function
 Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,fuzzyRate)
 	FindFuzzyPicFunc = False
 	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 1, fuzzyRate, intX, intY
-	If intX > -1 And intY > -1 Then
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & picName
 		FindFuzzyPicFunc = True
 	End If
 End Function
@@ -190,7 +241,6 @@ Function TapIfFindATCPic(x1,y1,x2,y2,picSimpleName)
 	tempBool = FindPicFunc(x1, y1, x2, y2, "Attachment:" + picSimpleName + "..png")
 	TapIfFindATCPic = tempBool
 	If tempBool Then
-		TracePrint "Find " & picSimpleName
 		TapFind
 	End If
 End Function
@@ -198,7 +248,6 @@ Function TapIfFindPic(x1,y1,x2,y2,picName)
 	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
 	TapIfFindPic = tempBool
 	If tempBool Then
-		TracePrint "Find " & picName
 		TapFind
 	End If
 End Function
@@ -206,7 +255,6 @@ Function ShiftTapIfFindPic(x1,y1,x2,y2,picName,shiftX,shiftY)
 	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
 	ShiftTapIfFindPic = tempBool
 	If tempBool Then
-		TracePrint "Find " & picName
 		TapXy(shiftX + intX,shiftY + intY)
 	End If
 End Function
@@ -214,7 +262,6 @@ Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
 	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
 	TapRangeIfFindPic = tempBool
 	If tempBool Then
-		TracePrint "Find " & picName
 		TapRange(tapX1,tapY1,tapX2,tapY2)
 	End If
 End Function
@@ -224,7 +271,6 @@ Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
 	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
 	TapXyIfFindPic = tempBool
 	If tempBool Then
-		TracePrint "Find " & picName
 		TapXy(tapX,tapY)
 	End If
 End Function
