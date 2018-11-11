@@ -25,12 +25,14 @@ scriptMode = "simBattleExp"
 LastTapTime = TickCount()
 
 While True
+
 	//work
 	'TestCode
 	Dungeon
-	ClearNewCharacterStory
+	JoinOnlineBattle
 	
 	'--------
+	ClearNewCharacterStory
 	
 	'BattleEnd
 	WinPage_Tap_NextPageBtn
@@ -85,6 +87,50 @@ End Function
 
 
 'Unschedulable script ----------
+
+Function JoinOnlineBattle
+	If IsOnlineBattlePage() Then 
+		'select quest vanguard-2(hard)  / A-II
+		TapIfFindPic 487, 109, 602, 162, "Attachment:Btn_OnlineBattle_A-II_487,109,602,162..png"
+	End If
+	
+	' OnlineBattle vanguard-2(hard) / A-II   select create room Or join room ---> join room
+	TapIfFindPic 794,371,873,393, "Attachment:Btn_OnlineBattle_JoinMode_794,371,873,393..png"
+	
+	If IsSearchRoomPage() Then 
+		'search Room
+		If Not TapRangeIfFindPic(402, 289, 540, 301, "Attachment:Feature_OnlineBattle_NotFoundRoom_402,289,540,301..png", 880, 84, 900, 100) Then 
+			'if search success, rnd join
+			TapRange 246, 151, 264, 434
+		End If 
+	End If
+	
+	TapRangeIfFindPic 441, 37, 519, 48, "Attachment:Msgbox_OnlineBattle_JoinConfirm_441,37,519,48..png", 501, 467, 680, 489
+	TapRangeIfFindPic 429,139,529,153, "Attachment:Msgbox_OnlineBattle_JoinFaild_429,139,529,153..png", 391, 357, 566, 378
+	
+	If IsOnlineBattleRoomPage() Then 
+		'Use Ticket
+		If Not TapIfFindPic(531,480,602,491, "Attachment:Feature_OnlineBattle_UseTicket_531,480,602,491..png") Then
+			'Start Battle
+			TapRangeIfFindPic(794,486,870,497, "Attachment:Btn_OnlineBattle_ReadyStart_794,486,870,497..png",760,486,907,503)
+		End If
+		
+		
+	End If
+	
+	TapRangeIfFindPic 419, 140, 537, 151, "Attachment:Msgbox_OnlineBattle_StartConfirm_419,140,537,151..png", 507, 359, 668, 380
+
+	'Battle: Open AutoSkill
+	TapIfFindPic(896,411,927,430,"Attachment:Btn_Battle_AutoSkill_896,411,927,430..png")
+	'WinPage
+	TapRangeIfFindPic(408,32,429,45,"Attachment:Feature_OnlineBattle_Win_408,32,429,45..png",742,480,915,503)
+	
+	'TODO List:
+	'1.battle field
+	'2.auto support skill
+	'3.exit idle room
+End Function
+
 Function Dungeon
 	If IsDungeonPage() And FindFuzzyPicFunc(304, 200, 594, 386, "Attachment:Feature_DungeonChest1_+13,14..png", 0.7) Then 
 		TapIfFind 
@@ -178,6 +224,20 @@ End Function
 'find a feature and tap something at once
 
 
+'OnlineBattle -----
+Function IsOnlineBattlePage
+	IsOnlineBattlePage = FindPicFunc(69,13,111,45, "Attachment:PageFeature_OnlineBattle_69,13,111,45..png")
+End Function
+Function IsSearchRoomPage
+	IsSearchRoomPage = FindPicFunc(65,15,143,38, "Attachment:PageFeature_OnlineBattle_SearchRoom_65,15,143,38..png")
+End Function
+Function IsOnlineBattleRoomPage
+	IsOnlineBattleRoomPage = FindPicFunc(751,432,803,442, "Attachment:PageFeature_IsOnlineBattleRoomPage_751,432,803,442..png")
+End Function
+
+
+
+
 'Story ------------
 Function IsStoryPage
 	IsStoryPage = FindPicFunc(321, 522, 352, 534, "Attachment:PageFeature_Story_321,522,352,534..png")
@@ -234,23 +294,19 @@ End Function
 
 
 '-----------------------------------------------------------------------------------------
-'------------------------------------- anjain API ----------------------------------------
-Function FindPicFunc(x1,y1,x2,y2,picName)
-	FindPicFunc = False
-	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
-	If intX > -1 And intY > -1 Then 
-		TracePrint "Find " & picName
-		FindPicFunc = True
-	End If
+'------------------------------- anjain advance function ---------------------------------
+
+'ex: "Attachment:Btn_InTheStoryMenu_Skip_793,29,819,60..png" -> 793,29,819,60
+Function GetFindPicRangeFromFormattedPicName(picName)
+	Dim str1
+	str1 = picName
+	Dim last_
+	last_ = InStrRev(str1, "_", -1)
+	Dim dotdotPng
+	dotdotPng = InStrRev(str1, "..png", -1,true)
+	GetFindPicRangeFromFormattedPicName = Mid(str1,last_+1,dotdotPng-last_-1)
 End Function
-Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,fuzzyRate)
-	FindFuzzyPicFunc = False
-	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 1, fuzzyRate, intX, intY
-	If intX > -1 And intY > -1 Then 
-		TracePrint "Find " & picName
-		FindFuzzyPicFunc = True
-	End If
-End Function
+
 Function PicHasFind()
 	PicHasFind = False
 	If intX > -1 And intY > -1 Then
@@ -288,7 +344,6 @@ Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
 	End If
 End Function
 
-
 Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
 	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
 	TapXyIfFindPic = tempBool
@@ -311,6 +366,26 @@ Sub TapRange(tapX1,tapY1,tapX2,tapY2)
 	targetY = tapY1 + (tapY2 - tapY1) * Rnd()
 	TapXy targetX,targetY
 End Sub
+
+'-----------------------------------------------------------------------------------------
+'----------------------------------- anjain Base API -------------------------------------
+Function FindPicFunc(x1,y1,x2,y2,picName)
+	FindPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & picName
+		FindPicFunc = True
+	End If
+End Function
+Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,fuzzyRate)
+	FindFuzzyPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 1, fuzzyRate, intX, intY
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & picName
+		FindFuzzyPicFunc = True
+	End If
+End Function
+
 Sub TapXy(tapX, tapY)
 	targetX = tapX + 5 * Rnd()
 	targetY = tapY + 5 * Rnd()
