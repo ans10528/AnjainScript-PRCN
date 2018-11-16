@@ -28,16 +28,18 @@ While True
 
 	//work
 	'TestCode
-	Dungeon
-	JoinOnlineBattle
 	
 	'--------
-	ClearNewCharacterStory
 	
 	'BattleEnd
 	WinPage_Tap_NextPageBtn
 	ResultItemsPage_Tap_BattleAgainBtn
-	CheckBattleAgainMsgbox_Tap_YesBtn
+	CheckBattleAgainMsgbox_Tap_YesBtn 
+	
+	'--------
+	ClearNewCharacterStory
+	JoinOnlineBattle
+	Dungeon
 
 	'Global
 	PlayerLvUpMsgbox
@@ -87,7 +89,8 @@ End Function
 
 
 'Unschedulable script ----------
-
+Dim OnlineBattleWinSearchCount
+Dim IsOnlineBattleRoomPageCount
 Function JoinOnlineBattle
 	If IsOnlineBattlePage() Then 
 		'select quest vanguard-2(hard)  / A-II
@@ -101,7 +104,26 @@ Function JoinOnlineBattle
 		'search Room
 		If Not TapRangeIfFindPic(402, 289, 540, 301, "Attachment:Feature_OnlineBattle_NotFoundRoom_402,289,540,301..png", 880, 84, 900, 100) Then 
 			'if search success, rnd join
-			TapRange 246, 151, 264, 434
+			'TapRange 246, 151, 264, 434
+			Dim rooms_Y(3)
+			rooms_Y(1) = 204
+			rooms_Y(2) = 332
+			rooms_Y(3) = 458
+			Dim roomCount
+			
+			If FindColorFunc(157, 458, 157, 458, "F7965A") Then 
+				roomCount = 3
+			ElseIf FindColorFunc(157, 331, 157, 331, "F7965A") Then 
+				roomCount = 2
+			ElseIf FindColorFunc(157, 204, 157, 204, "F7965A") Then 
+				roomCount = 1
+			End If
+			
+			Dim rndRoomNumber
+			rndRoomNumber = int(Rnd()*roomCount)
+			If PicHasFind() Then 
+				TapXy 157,204+127*rndRoomNumber
+			End If
 		End If 
 	End If
 	
@@ -109,13 +131,20 @@ Function JoinOnlineBattle
 	TapRangeIfFindPic 429,139,529,153, "Attachment:Msgbox_OnlineBattle_JoinFaild_429,139,529,153..png", 391, 357, 566, 378
 	
 	If IsOnlineBattleRoomPage() Then 
+		IsOnlineBattleRoomPageCount = IsOnlineBattleRoomPageCount + 1
 		'Use Ticket
 		If Not TapIfFindPic(531,480,602,491, "Attachment:Feature_OnlineBattle_UseTicket_531,480,602,491..png") Then
 			'Start Battle
 			TapRangeIfFindPic(794,486,870,497, "Attachment:Btn_OnlineBattle_ReadyStart_794,486,870,497..png",760,486,907,503)
 		End If
-		
-		
+		'exit idle room
+		If IsOnlineBattleRoomPageCount > 20 Then 
+			TapXy 30, 29
+			Delay 5000
+			TapXy 580,373
+		End If
+	Else
+		IsOnlineBattleRoomPageCount = 0
 	End If
 	
 	TapRangeIfFindPic 419, 140, 537, 151, "Attachment:Msgbox_OnlineBattle_StartConfirm_419,140,537,151..png", 507, 359, 668, 380
@@ -123,12 +152,41 @@ Function JoinOnlineBattle
 	'Battle: Open AutoSkill
 	TapIfFindPic(896,411,927,430,"Attachment:Btn_Battle_AutoSkill_896,411,927,430..png")
 	'WinPage
-	TapRangeIfFindPic(408,32,429,45,"Attachment:Feature_OnlineBattle_Win_408,32,429,45..png",742,480,915,503)
+	If FindPicFunc(408, 32, 429, 45, "Attachment:Feature_OnlineBattle_Win_408,32,429,45..png") Then 
+		OnlineBattleWinSearchCount = OnlineBattleWinSearchCount + 1
+		If OnlineBattleWinSearchCount > 4 Then 
+			TapRange 742, 480, 915, 503
+		End If
+	Else 
+		OnlineBattleWinSearchCount = 0
+	End If
+	'If Not ResultItemsPage_Tap_BattleAgainBtn() Then
+	'	TapRangeIfFindPic , 742, 480, 915, 503
+	'End If
+	
+	'disconnect 
+	TapRangeIfFindPic(423,259,516,275,"Attachment:Msgbox_OnlineBattle_disconnect_423,259,516,275..png",518,358,667,383)
+	
+	'member leave room
+	TapRangeIfFindPic 462, 138, 497, 155, "Attachment:Msgbox_OnlineBattle_memberLeave_462,138,497,155..png", 417, 363, 546, 382
+	If PicHasFind() Then 
+		'if member was leave, the room maybe is idle
+		IsOnlineBattleRoomPageCount = IsOnlineBattleRoomPageCount + 20
+		Delay 2000
+	End If
+	
+	'leader leave room
+	TapRangeIfFindPic 462,139,499,156, "Attachment:Msgbox_OnlineBattle_LeaderLeave_462,139,499,156..png", 403,356,564,386
+	
 	
 	'TODO List:
-	'1.battle field
+	'1.battle faild
 	'2.auto support skill
-	'3.exit idle room
+	'3.exit idle room  --fix
+	'5.WinPage conflict(global battle end: battle again) --fix   (OnlineBattleWinSearchCount > 5)
+	'6.Leader was sort battle order
+	'7.quick select room  --ok
+	'8.Leader close room --fix
 End Function
 
 Function Dungeon
@@ -369,6 +427,14 @@ End Sub
 
 '-----------------------------------------------------------------------------------------
 '----------------------------------- anjain Base API -------------------------------------
+Function FindColorFunc(x1,y1,x2,y2,colorName)
+	FindColorFunc = False
+	FindColor x1, y1 ,x2 ,y2 , colorName,0,0.9,intX,intY
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & colorName
+		FindColorFunc = True
+	End If
+End Function
 Function FindPicFunc(x1,y1,x2,y2,picName)
 	FindPicFunc = False
 	FindPic x1, y1 ,x2 ,y2 , picName, "000000", 0, 0.9, intX, intY
