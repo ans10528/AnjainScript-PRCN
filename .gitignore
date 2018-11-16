@@ -1,0 +1,9 @@
+*Script/
+!Script/PRCN/
+
+
+#註解
+#*.png           #png 圖檔
+#!new.png   #new.png 例外
+#/images      #/images 目錄下檔案
+#images/      #所有 images 目錄下檔案
