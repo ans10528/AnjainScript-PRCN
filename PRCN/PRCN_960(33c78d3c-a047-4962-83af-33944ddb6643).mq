@@ -1,12 +1,30 @@
 Randomize
-Dim intX,intY,targetX,targetY
+Dim intX,intY,targetX,targetY,targetX2,targetY2
 Dim tempBool
 Dim lastTapTime
+lastTapTime = TickCount()
+
+'-------------------------
+'Find Func String
+Dim pic,findRect,tapMode,Rect,dropAB,DoNothing,tapFindXY,fuzzyRate,findDelay
+pic = "pic"
+findRect = "findRect"
+tapMode = "tapMode"
+Rect = "Rect"
+dropAB = "dropAB"
+DoNothing = "DoNothing"
+tapFindXY = "tapFindXY"
+fuzzyRate = "fuzzyRate"
+findDelay = "FindDelay"
+
+
+
+
 '960p
 '-----------------------------------------------------------------------------------------
 'Script Scheduler
 
-'
+
 
 '-----------------------------------------------------------------------------------------
 '-----------------------------------------------------------------------------------------
@@ -22,10 +40,11 @@ curPage = ""
 Dim scriptMode 'simBattleExp
 scriptMode = "simBattleExp"
 
-LastTapTime = TickCount()
 
 While True
 
+	
+	KeepCapture 
 	//work
 	'TestCode
 	
@@ -46,6 +65,8 @@ While True
 	HeartStorySkip
 	ClanBattleCpCountMsgbox 
 	
+	
+	ReleaseCapture
 	DelayRnd 900,200
 Wend
 EndScript
@@ -94,11 +115,11 @@ Dim IsOnlineBattleRoomPageCount
 Function JoinOnlineBattle
 	If IsOnlineBattlePage() Then 
 		'select quest vanguard-2(hard)  / A-II
-		TapIfFindPic 487, 109, 602, 162, "Attachment:Btn_OnlineBattle_A-II_487,109,602,162..png"
+		TapIfFindPic 487, 109, 602, 162, "Btn_OnlineBattle_A-II_487,109,602,162..png"
 	End If
 	
 	' OnlineBattle vanguard-2(hard) / A-II   select create room Or join room ---> join room
-	TapIfFindPic 794,371,873,393, "Attachment:Btn_OnlineBattle_JoinMode_794,371,873,393..png"
+	TapIfFindPic 794,371,873,393, "Btn_OnlineBattle_JoinMode_794,371,873,393..png"
 	
 	If IsSearchRoomPage() Then 
 		'if search success, rnd join
@@ -128,15 +149,15 @@ Function JoinOnlineBattle
 		End If
 	End If
 	
-	TapRangeIfFindPic 441, 37, 519, 48, "Attachment:Msgbox_OnlineBattle_JoinConfirm_441,37,519,48..png", 501, 467, 680, 489
-	TapRangeIfFindPic 429,139,529,153, "Attachment:Msgbox_OnlineBattle_JoinFaild_429,139,529,153..png", 391, 357, 566, 378
+	TapRangeIfFindPic 441, 37, 519, 48, "Msgbox_OnlineBattle_JoinConfirm_441,37,519,48..png", 501, 467, 680, 489
+	TapRangeIfFindPic 429,139,529,153, "Msgbox_OnlineBattle_JoinFaild_429,139,529,153..png", 391, 357, 566, 378
 	
 	If IsOnlineBattleRoomPage() Then 
 		IsOnlineBattleRoomPageCount = IsOnlineBattleRoomPageCount + 1
 		'Use Ticket
-		If Not TapIfFindPic(531,480,602,491, "Attachment:Feature_OnlineBattle_UseTicket_531,480,602,491..png") Then
+		If Not TapIfFindPic(531,480,602,491, "Feature_OnlineBattle_UseTicket_531,480,602,491..png") Then
 			'Start Battle
-			TapRangeIfFindPic(794,486,870,497, "Attachment:Btn_OnlineBattle_ReadyStart_794,486,870,497..png",760,486,907,503)
+			TapRangeIfFindPic(794,486,870,497, "Btn_OnlineBattle_ReadyStart_794,486,870,497..png",760,486,907,503)
 		End If
 		'exit idle room
 		If IsOnlineBattleRoomPageCount > 20 Then 
@@ -148,12 +169,12 @@ Function JoinOnlineBattle
 		IsOnlineBattleRoomPageCount = 0
 	End If
 	
-	TapRangeIfFindPic 419, 140, 537, 151, "Attachment:Msgbox_OnlineBattle_StartConfirm_419,140,537,151..png", 507, 359, 668, 380
+	TapRangeIfFindPic 419, 140, 537, 151, "Msgbox_OnlineBattle_StartConfirm_419,140,537,151..png", 507, 359, 668, 380
 
 	'Battle: Open AutoSkill
-	TapIfFindPic(896,411,927,430,"Attachment:Btn_Battle_AutoSkill_896,411,927,430..png")
+	TapIfFindPic(896,411,927,430,"Btn_Battle_AutoSkill_896,411,927,430..png")
 	'WinPage
-	If FindPicFunc(408, 32, 429, 45, "Attachment:Feature_OnlineBattle_Win_408,32,429,45..png") Then 
+	If FindPicFunc(408, 32, 429, 45, "Feature_OnlineBattle_Win_408,32,429,45..png") Then 
 		OnlineBattleWinSearchCount = OnlineBattleWinSearchCount + 1
 		If OnlineBattleWinSearchCount > 4 Then 
 			TapRange 742, 480, 915, 503
@@ -166,10 +187,10 @@ Function JoinOnlineBattle
 	'End If
 	
 	'disconnect 
-	TapRangeIfFindPic(423,259,516,275,"Attachment:Msgbox_OnlineBattle_disconnect_423,259,516,275..png",518,358,667,383)
+	TapRangeIfFindPic(423,259,516,275,"Msgbox_OnlineBattle_disconnect_423,259,516,275..png",518,358,667,383)
 	
 	'member leave room
-	TapRangeIfFindPic 462, 138, 497, 155, "Attachment:Msgbox_OnlineBattle_memberLeave_462,138,497,155..png", 417, 363, 546, 382
+	TapRangeIfFindPic 462, 138, 497, 155, "Msgbox_OnlineBattle_memberLeave_462,138,497,155..png", 417, 363, 546, 382
 	If PicHasFind() Then 
 		'if member was leave, the room maybe is idle
 		IsOnlineBattleRoomPageCount = IsOnlineBattleRoomPageCount + 20
@@ -177,7 +198,7 @@ Function JoinOnlineBattle
 	End If
 	
 	'leader leave room
-	TapRangeIfFindPic 462,139,499,156, "Attachment:Msgbox_OnlineBattle_LeaderLeave_462,139,499,156..png", 403,356,564,386
+	TapRangeIfFindPic 462,139,499,156, "Msgbox_OnlineBattle_LeaderLeave_462,139,499,156..png", 403,356,564,386
 	
 	
 	'TODO List:
@@ -188,32 +209,50 @@ Function JoinOnlineBattle
 End Function
 
 Function Dungeon
+
 	Dim direct
-	direct = Rnd()*3
-	If IsDungeonPage() And FindFuzzyPicFunc(304, 200, 594, 386, "Attachment:Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-		TapIfFind 
-		Delay 300
-	End If
-	If IsDungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-		TapIfFind 
-		Delay 300
-	End If
-	If IsDungeonPage() And FindFuzzyPicFunc(33,215,214,303, "Attachment:Feature_DungeonChest2_+10,10..png",direct, 0.7) Then 
-		TapIfFind 
-		Delay 300
-	End If
-	If IsDungeonPage() And FindFuzzyPicFunc(481,171,712,369, "Attachment:Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-		TapIfFind 
-		Delay 300
+	direct = Rnd() * 3
+	Dim tmp_isDungeonPage
+	tmp_isDungeonPage = IsDungeonPage()
+	
+	
+	If tmp_isDungeonPage Then 
+		'EX Dungeon
+		Find ({pic:"Dungeon_StepFeature_683,352,724,383..png"})
+		Find ({pic:"Dungeon_2StepFeature_586,320,651,387..png"})
+		Find ({pic:"Dungeon_3StepFeature_306,343,352,385..png"})
+		Find ({pic:"Dungeon_4StepFeature_660,339,718,391..png"})
+		Find ({pic:"Dungeon_5StepFeature_260,260,357,344..png"})
+		
+		
+		'VH Dungeon
+		If FindFuzzyPicFunc(304, 200, 594, 386, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+			TapIfFind 
+			Delay 300
+		End If
+		If FindFuzzyPicFunc(33,215,214,303, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+			TapIfFind 
+			Delay 300
+		End If
+		If FindFuzzyPicFunc(33,215,214,303, "Feature_DungeonChest2_+10,10..png",direct, 0.7) Then 
+			TapIfFind 
+			Delay 300
+		End If
+		If FindFuzzyPicFunc(481,171,712,369, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+			TapIfFind 
+			Delay 300
+		End If
 	End If
 	
-	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "Attachment:PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
+
 	
-	FindPicFunc 439,34,518,51, "Attachment:PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
+	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
+	
+	FindPicFunc 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
 	If PicHasFind() Then 
 		'check member is full
 		
-		If Not FindPicFunc(53,451,78,502, "Attachment:Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
+		If Not FindPicFunc(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
 			TapRange 786, 444, 893, 462
 		Else 
 			'delay 5~10s
@@ -221,7 +260,7 @@ Function Dungeon
 		End If
 	End If
 	
-	TapRangeIfFindPic 441, 33, 505, 52, "Attachment:Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398, 471, 546, 487
+	TapRangeIfFindPic 441, 33, 505, 52, "Msgbox_Dungeon_BattleResult_441,33,505,52..png", 398, 471, 546, 487
 End Function
 
 Function ClearNewCharacterStory
@@ -245,11 +284,11 @@ Function ClearNewCharacterStory
 		
 		'Other Story
 		'NewestNewStory (pic from GiRuTo Story)
-		TapRangeIfFindPic 481, 133, 528, 141, "Attachment:Feature_NewestNewStory_481,133,528,141..png", 501, 154, 849, 225
+		TapRangeIfFindPic 481, 133, 528, 141, "Feature_NewestNewStory_481,133,528,141..png", 501, 154, 849, 225
 		'NewStory (pic from Event Story)
-		TapRangeIfFindPic 481, 190, 528, 198, "Attachment:Feature_NewStory_481,190,528,198..png", 494, 211, 871, 280
+		TapRangeIfFindPic 481, 190, 528, 198, "Feature_NewStory_481,190,528,198..png", 494, 211, 871, 280
 		'LastNewStory (pic form Event Story)
-		TapRangeIfFindPic 481, 74, 528, 81, "Attachment:Feature_LastNewStory_481,74,528,81..png", 497, 107, 816, 165
+		TapRangeIfFindPic 481, 74, 528, 81, "Feature_LastNewStory_481,74,528,81..png", 497, 107, 816, 165
 		
 		
 	End If
@@ -266,12 +305,12 @@ Function ClearNewCharacterStory
 	End If
 	
 	'Msgbox_StoryBrief
-	TapRangeIfFindPic 441, 138, 515, 153, "Attachment:Msgbox_StoryBrief_441,138,515,153..png", 516, 362, 671, 385
+	TapRangeIfFindPic 441, 138, 515, 153, "Msgbox_StoryBrief_441,138,515,153..png", 516, 362, 671, 385
 	
 	'Msgbox_ConfirmReward
-	TapRangeIfFindPic 440, 33, 515, 51, "Attachment:Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", 417, 466, 556, 494
+	TapRangeIfFindPic 440, 33, 515, 51, "Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", 417, 466, 556, 494
 	'Msgbox GiRuTo Story Confirm Reward
-	TapRangeIfFindPic 439, 78, 518, 95, "Attachment:Msgbox_GirutoStoryConfirmReward_439,78,518,95..png", 412, 421, 556, 448
+	TapRangeIfFindPic 439, 78, 518, 95, "Msgbox_GirutoStoryConfirmReward_439,78,518,95..png", 412, 421, 556, 448
 	
 	
 	'TODO: In battle Conversation AutoTap
@@ -284,15 +323,15 @@ End Function
 
 'OnlineBattle -----
 Function IsOnlineBattlePage
-	IsOnlineBattlePage = FindPicFunc(69,13,111,45, "Attachment:PageFeature_OnlineBattle_69,13,111,45..png")
+	IsOnlineBattlePage = FindPicFunc(69,13,111,45, "PageFeature_OnlineBattle_69,13,111,45..png")
 	PrintIfFind "IsOnlineBattlePage"
 End Function
 Function IsSearchRoomPage
-	IsSearchRoomPage = FindPicFunc(65,15,143,38, "Attachment:PageFeature_OnlineBattle_SearchRoom_65,15,143,38..png")
+	IsSearchRoomPage = FindPicFunc(65,15,143,38, "PageFeature_OnlineBattle_SearchRoom_65,15,143,38..png")
 	PrintIfFind "IsSearchRoomPage"
 End Function
 Function IsOnlineBattleRoomPage
-	IsOnlineBattleRoomPage = FindPicFunc(751,432,803,442, "Attachment:PageFeature_IsOnlineBattleRoomPage_751,432,803,442..png")
+	IsOnlineBattleRoomPage = FindPicFunc(751,432,803,442, "PageFeature_IsOnlineBattleRoomPage_751,432,803,442..png")
 	PrintIfFind "IsOnlineBattleRoomPage"
 End Function
 
@@ -301,64 +340,58 @@ End Function
 
 'Story ------------
 Function IsStoryPage
-	IsStoryPage = FindPicFunc(321, 522, 352, 534, "Attachment:PageFeature_Story_321,522,352,534..png")
+	IsStoryPage = FindPicFunc(321, 522, 352, 534, "PageFeature_Story_321,522,352,534..png")
 End Function
 Function IsCharacterStoryPage_NewTag
-	IsCharacterStoryPage_NewTag = FindPicFunc(477,24,535,44, "Attachment:Feature_NewCharStory_477,24,535,44..png")	
+	IsCharacterStoryPage_NewTag = FindPicFunc(477,24,535,44, "Feature_NewCharStory_477,24,535,44..png")	
 End Function
 Function IsCharacterStoryDetailPage
-	IsCharacterStoryDetailPage = FindPicFunc(566,43,608,54, "Attachment:Feature_Story_CharacterDetail_566,43,608,54..png")
+	IsCharacterStoryDetailPage = FindPicFunc(566,43,608,54, "Feature_Story_CharacterDetail_566,43,608,54..png")
 End Function
 Function IsNoNewCharacterRankStory
 	Dim NoNewRank8Story
 	Dim NoNewRankNStory
-	NoNewRank8Story = FindPicFunc(482, 137, 514, 140, "Attachment:Feature_NoNewCharacterStory_482,137,514,140..png")
-	NoNewRankNStory = FindPicFunc(480, 194, 507, 197, "Attachment:Feature_NoNewCharacterStory_480,194,507,197..png")
+	NoNewRank8Story = FindPicFunc(482, 137, 514, 140, "Feature_NoNewCharacterStory_482,137,514,140..png")
+	NoNewRankNStory = FindPicFunc(480, 194, 507, 197, "Feature_NoNewCharacterStory_480,194,507,197..png")
 	IsNoNewCharacterRankStory = NoNewRank8Story Or NoNewRankNStory
 End Function
 Function StoryVoiceDownload_Tap_NoVoice
-	TapRangeIfFindPic(420,139,537,155, "Attachment:Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
+	TapRangeIfFindPic(420,139,537,155, "Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
 End Function
 Function IsInTheStory
-	IsInTheStory = FindPicFunc(931,55,903,29, "Attachment:Btn_StoryMenu_931,55,903,29..png")
+	IsInTheStory = FindPicFunc(931,55,903,29, "Btn_StoryMenu_931,55,903,29..png")
 End Function
 Function InTheStory_Tap_Skip
-	TapIfFindPic(793,29,819,60, "Attachment:Btn_InTheStoryMenu_Skip_793,29,819,60..png")
+	TapIfFindPic(793,29,819,60, "Btn_InTheStoryMenu_Skip_793,29,819,60..png")
 End Function
 
 'Dungeon ------------
 Function IsDungeonPage
-	IsDungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "Attachment:PageFeature_Dungeon_491,427+116,14..png")
+	IsDungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "PageFeature_Dungeon_491,427+116,14..png")
 End Function
 
 'BattleEnd ----------
 Function WinPage_Tap_NextPageBtn
-	WinPage_Tap_NextPageBtn = TapRangeIfFindPic(820, 30, 820 + 70, 30 + 10, "Attachment:BtnBattleReport..png", 720, 483, 895, 505)
+	WinPage_Tap_NextPageBtn = TapRangeIfFindPic(820, 30, 820 + 70, 30 + 10, "BtnBattleReport..png", 720, 483, 895, 505)
 End Function
 Function ResultItemsPage_Tap_BattleAgainBtn
-	ResultItemsPage_Tap_BattleAgainBtn = TapRangeIfFindPic (623, 483, 623 + 77, 483 + 14, "Attachment:BtnBattleAgain..png", 597, 479, 725, 502)
+	ResultItemsPage_Tap_BattleAgainBtn = TapRangeIfFindPic (623, 483, 623 + 77, 483 + 14, "BtnBattleAgain..png", 597, 479, 725, 502)
 End Function
 Function CheckBattleAgainMsgbox_Tap_YesBtn
-	CheckBattleAgainMsgbox_Tap_YesBtn = TapRangeIfFindPic (422, 139, 422 + 116, 139 + 14, "Attachment:MsgboxBattleAgainCheck..png", 503, 359, 669, 381)
+	CheckBattleAgainMsgbox_Tap_YesBtn = TapRangeIfFindPic (422, 139, 422 + 116, 139 + 14, "MsgboxBattleAgainCheck..png", 503, 359, 669, 381)
 End Function
 
 'Global -------------
 Function PlayerLvUpMsgbox
-	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "Attachment:MsgboxLevelUp.png", 400, 360, 561, 380
+	TapRangeIfFindPic 442, 139, 442 + 75, 139 + 14, "MsgboxLevelUp.png", 400, 360, 561, 380
 End Function
 Function HeartStorySkip
-	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "Attachment:BtnStorySkip..png"
+	TapIfFindPic 882, 33, 882 + 31, 33 + 17, "BtnStorySkip..png"
 End Function
 Function ClanBattleCpCountMsgbox
-	TapRangeIfFindPic 427,82,427+108,82+9, "Attachment:MsgboxTeamBattleCpFull_427_82..png", 296,420,454,448
+	TapRangeIfFindPic 427,82,427+108,82+9, "MsgboxTeamBattleCpFull_427_82..png", 296,420,454,448
 End Function
 
-
-'-----------------------------------------------------------------------------------------
-'------------------------------- anjain advance function v1.0-----------------------------
-
-'-----------------------------------------------------------------------------------------
-'----------------------------------- anjain Base API v1.0---------------------------------
 
 '-----------------------------------------------------------------------------------------
 '------------------------------- anjain advance function ---------------------------------
@@ -373,7 +406,6 @@ Function GetFindPicRangeFromFormattedPicName(picName)
     dotdotPng = InStrRev(str1, "..png", -1,true)
     GetFindPicRangeFromFormattedPicName = Mid(str1,last_+1,dotdotPng-last_-1)
 End Function
-
 
 Function TapPicRectIfFind(x1,y1,x2,y2,picName)
     tempBool = FindPicFunc(x1, y1, x2, y2, picName)
@@ -529,22 +561,69 @@ Function ReadIntParam(strParam1)
 	End If
 End Function
 
+Function PicHasFind()
+	PicHasFind = False
+	If intX > -1 And intY > -1 Then
+		PicHasFind = True
+	End If
+End Function
+
+'not used     ATC=Attachment
+Function TapIfFindATCPic(x1,y1,x2,y2,picSimpleName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, "" + picSimpleName + "..png")
+	TapIfFindATCPic = tempBool
+	If tempBool Then
+		TapFind
+	End If
+End Function
+Function TapIfFindPic(x1,y1,x2,y2,picName)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapIfFindPic = tempBool
+	If tempBool Then
+		TapFind
+	End If
+End Function
+Function ShiftTapIfFindPic(x1,y1,x2,y2,picName,shiftX,shiftY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	ShiftTapIfFindPic = tempBool
+	If tempBool Then
+		TapXy(shiftX + intX,shiftY + intY)
+	End If
+End Function
+Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapRangeIfFindPic = tempBool
+	If tempBool Then
+		TapRange(tapX1,tapY1,tapX2,tapY2)
+	End If
+End Function
+
+Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
+	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	TapXyIfFindPic = tempBool
+	If tempBool Then
+		TapXy(tapX,tapY)
+	End If
+End Function
+Sub TapRange(tapX1,tapY1,tapX2,tapY2)
+	targetX = tapX1 + (tapX2-tapX1) * Rnd()
+	targetY = tapY1 + (tapY2 - tapY1) * Rnd()
+	TapXy targetX,targetY
+End Sub
+
 '-----------------------------------------------------------------------------------------
 '----------------------------------- anjain Base API -------------------------------------
 Function SplitComma(str1)
 	SplitComma = Split(str1,",")
 End Function
-Function SplitArrStr(str1)
-	SplitArrStr = Split(str1,"|")
-End Function
 
 Function FindColorFunc(x1,y1,x2,y2,colorName)
-    FindColorFunc = False
-    FindColor x1, y1 ,x2 ,y2 , colorName,0,0.9,intX,intY
-    If intX > -1 And intY > -1 Then 
-        TracePrint "Find " & colorName
-        FindColorFunc = True
-    End If
+	FindColorFunc = False
+	FindColor x1, y1 ,x2 ,y2 , colorName,0,0.9,intX,intY
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & colorName
+		FindColorFunc = True
+	End If
 End Function
 Function FindPicFunc(x1,y1,x2,y2,picName)
     FindPicFunc = False
@@ -555,24 +634,25 @@ Function FindPicFunc(x1,y1,x2,y2,picName)
     End If
 End Function
 Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,direct,fuzzyRate)
-    FindFuzzyPicFunc = False
-    FindPic x1, y1 ,x2 ,y2 , "Attachment:" & picName, "000000", direct, fuzzyRate, intX, intY
-    If intX > -1 And intY > -1 Then 
-        TracePrint "Find " & picName
-        FindFuzzyPicFunc = True
-    End If
+	FindFuzzyPicFunc = False
+	FindPic x1, y1 ,x2 ,y2 , picName, "000000", direct, fuzzyRate, intX, intY
+	If intX > -1 And intY > -1 Then 
+		TracePrint "Find " & picName
+		FindFuzzyPicFunc = True
+	End If
 End Function
 
+
+
+
 Sub TapXy(tapX, tapY)
-    targetX = int(tapX + 5 * Rnd())
-    targetY = int(tapY + 5 * Rnd())
-    Dim WakuUpTimeMS
-    WakuUpTimeMS = 10 + Sqr(TickCount() - lastTapTime) * 10 * Rnd()
-    Delay WakuUpTimeMS
-    Tap targetX, targetY
-    lastTapTime = TickCount()
-    TracePrint "Tap " & targetX & "," & targetY
-    Delay 10 + 15 * Rnd()
+	targetX = tapX + 5 * Rnd()
+	targetY = tapY + 5 * Rnd()
+	Delay 10 + Sqr(TickCount()-lastTapTime) * Rnd()
+	Tap targetX, targetY
+	lastTapTime = TickCount()
+	TracePrint "Tap " & targetX & "," & targetY
+	Delay 10 + 15 * Rnd()
 End Sub
 Sub SwipeAB(swipeAx, swipeAy,swipeBx,swipeBy)
     targetX = int(swipeAx + 5 * Rnd())
@@ -588,13 +668,11 @@ Sub SwipeAB(swipeAx, swipeAy,swipeBx,swipeBy)
     Delay 10 + 15 * Rnd()
 End Sub
 
-
 Sub PrintIfFind(msgStr)
-    If intX > -1 And intY > -1 Then
-        TracePrint msgStr
-    End If
+	If intX > -1 And intY > -1 Then
+		TracePrint msgStr
+	End If
 End Sub
 Sub DelayRnd(BaseDelay,RndDelay)
-    Delay BaseDelay + RndDelay*Rnd()
+	Delay BaseDelay + RndDelay*Rnd()
 End Sub
-
