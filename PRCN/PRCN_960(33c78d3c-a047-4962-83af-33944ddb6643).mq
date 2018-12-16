@@ -1,6 +1,14 @@
+'phadvAnjain ver 1.2.2
+'update:
+'1.1.1: add TapPicRectIfFind()
+'1.2.0  add Find()
+'		idleTapDelay*10
+'1.2.1  fix find()  Rect bug
+'		add SwipeAB() and support find()
+'1.2.2  find() enhancement
+'		tapMode: Dot
+'		Find Color
 
-
-'import phadvAnjain ver 1.2.2
 Randomize
 Dim intX,intY,targetX,targetY,targetX2,targetY2
 Dim tempBool
@@ -9,7 +17,7 @@ lastTapTime = TickCount()
 
 '-------------------------
 'Find Func String
-Dim pic,findRect,tapMode,Rect,dropAB,DoNothing,tapFindXY,fuzzyRate,findDelay,Dot
+Dim pic,findRect,tapMode,Rect,dropAB,DoNothing,tapFindXY,fuzzyRate,findDelay,Dot,color
 pic = "pic"
 findRect = "findRect"
 tapMode = "tapMode"
@@ -20,9 +28,10 @@ tapFindXY = "tapFindXY"
 fuzzyRate = "fuzzyRate"
 findDelay = "FindDelay"
 Dot = "Dot"
+color = "color"
 
 '-----------------------------------------------------------------------------------------
-'------------------------------- anjain advance function 1.2------------------------------
+'------------------------------- anjain advance function ---------------------------------
 
 'ex: "Btn_InTheStoryMenu_Skip_793,29,819,60..png" -> 793,29,819,60
 Function GetFindPicRangeFromFormattedPicName(picName)
@@ -54,8 +63,10 @@ Sub TapRect(tapX1,tapY1,tapX2,tapY2)
 End Sub
 
 Function Find(p)
-	Dim FindFuncParam '(x1,y1,x2,y2,picName,fuzzyRate)
+	Dim FindFuncParam '(rect,picName,fuzzyRate)
+	Dim FindColorParam '(rect,colorName,fuzzyRate)
     Dim picName
+    Dim colorName
     Dim find_x1,find_y1,find_x2,find_y2,ArrTemp()
     Dim FindAction
     Dim hasfindTemp
@@ -73,48 +84,56 @@ Function Find(p)
     fuzzyRateTemp = 0.9
     findDirectTemp = 1
     
+    'search target --------------------------------------
     If p[pic] <> null Then 
         picName = p[pic]
-        FindFuncParam = FindFuncParam + 000010
-        
-    	If p[findRect] <> null Then 
-        	ArrTemp = SplitComma(p[findRect])
-    	Else
-        	ArrTemp = SplitComma(GetFindPicRangeFromFormattedPicName(picName))
+        FindFuncParam = FindFuncParam + 010
+
+    	If p[findRect] = null Then 
+			p[findRect] = GetFindPicRangeFromFormattedPicName(picName)
     	End If
+    End If
+
+    If p[color] <> null Then 
+    	colorName = p[color]
+    	FindColorParam = 020
+    End If
+    
+    'search locate and config ----------------------------
+   
+    If p[findRect] <> null Then 
     	FindAction = findRect
-    	
-        find_x1 = ArrTemp(0)
-        If find_x1 Then 
-        	FindFuncParam = FindFuncParam + 100000
-        End If
-        find_y1 = ArrTemp(1)
-        If find_y1 Then 
-        	FindFuncParam = FindFuncParam + 010000
-        End If
-        find_x2 = ArrTemp(2)
-        If find_x2 Then 
-        	FindFuncParam = FindFuncParam + 001000
-        End If
-        find_y2 = ArrTemp(3)
-        If find_y2 Then 
-        	FindFuncParam = FindFuncParam + 000100
+        ArrTemp = SplitComma(p[findRect])
+    	FindAction = findRect
+        If UBound(ArrTemp) = 3 Then 
+        	find_x1 = ArrTemp(0)
+        	find_y1 = ArrTemp(1)
+        	find_x2 = ArrTemp(2)
+        	find_y2 = ArrTemp(3)
+        	FindFuncParam = FindFuncParam + 100
+        ElseIf UBound(ArrTemp) = 1 Then 
+        	find_x1 = ArrTemp(0)
+        	find_y1 = ArrTemp(1)
+        	find_x2 = ArrTemp(0)
+        	find_y2 = ArrTemp(1)
+        	FindFuncParam = FindFuncParam + 100
+        Else 
+        	TracePrint "Error: picName FindRect Not Match :" & picName
         End If
     End If
     
     If p[fuzzyRate] <> null Then 
     	fuzzyRateTemp = p[fuzzyRate]
-        FindFuncParam = FindFuncParam + 000001
+        FindFuncParam = FindFuncParam + 001
     End If
     
-    If FindFuncParam = 111111 Then 
-    	FindFuzzyPicFunc(find_x1, find_y1, find_x2, find_y2, picName, findDirectTemp, fuzzyRateTemp)
-	ElseIf FindFuncParam = 111110 Then 
-    	FindPicFunc find_x1, find_y1, find_x2, find_y2, picName
+    If p[pic] <> null Then
+    	FindPicFunc find_x1, find_y1, find_x2, find_y2, picName, findDirectTemp, fuzzyRateTemp
+    ElseIf p[color] <> null Then
+    	FindColorFunc find_x1, find_y1, find_x2, find_y2, colorName, findDirectTemp, fuzzyRateTemp
 	End If
 	
-	
-	
+	'Action-----------------------------------------------------------
 	Dim tap_x1,tap_y1,tap_x2,tap_y2
 	If p[Rect] <> null Then 
         ArrTemp = SplitComma(p[Rect])
@@ -144,8 +163,6 @@ Function Find(p)
 		FindAction = p[tapMode]
 	End If
 	
-	
-	'Action-----------------------------------------------------------
 	hasfindTemp = HasFind()
 	If hasfindTemp Then 
 		Select Case FindAction
@@ -176,39 +193,31 @@ Function ReadIntParam(strParam1)
 	End If
 End Function
 
-
 '-----------------------------------------------------------------------------------------
 '----------------------------------- anjain Base API -------------------------------------
 Function SplitComma(str1)
 	SplitComma = Split(str1,",")
 End Function
-
-Function FindColorFunc(x1,y1,x2,y2,colorName)
-	FindColorFunc = False
-	FindColor x1, y1 ,x2 ,y2 , colorName,0,0.9,intX,intY
-	If intX > -1 And intY > -1 Then 
-		TracePrint "Find " & colorName
-		FindColorFunc = True
-	End If
+Function SplitArrStr(str1)
+	SplitArrStr = Split(str1,"|")
 End Function
-Function FindPicFunc(x1,y1,x2,y2,picName)
-    FindPicFunc = False
-    FindPic x1, y1 ,x2 ,y2 ,  "Attachment:" & picName, "000000", 0, 0.9, intX, intY
+
+Function FindColorFunc(x1, y1, x2, y2, colorName,direct,fuzzyRate)
+    FindColorFunc = False
+    FindColor x1, y1 ,x2 ,y2 , colorName,direct,fuzzyRate,intX,intY
     If intX > -1 And intY > -1 Then 
-        TracePrint "Find " & picName
+        TracePrint "Find " & colorName & " " & intX & "," & intY
+        FindColorFunc = True
+    End If
+End Function
+Function FindPicFunc(x1,y1,x2,y2,picName,direct,fuzzyRate)
+    FindPicFunc = False
+    FindPic x1, y1 ,x2 ,y2 ,  "Attachment:" & picName, "000000", direct, fuzzyRate, intX, intY
+    If intX > -1 And intY > -1 Then 
+        TracePrint "Find " & picName & " " & intX & "," & intY
         FindPicFunc = True
     End If
 End Function
-Function FindFuzzyPicFunc(x1,y1,x2,y2,picName,direct,fuzzyRate)
-	FindFuzzyPicFunc = False
-	FindPic x1, y1 ,x2 ,y2 , picName, "000000", direct, fuzzyRate, intX, intY
-	If intX > -1 And intY > -1 Then 
-		TracePrint "Find " & picName
-		FindFuzzyPicFunc = True
-	End If
-End Function
-
-
 
 Sub TapXy(tapX, tapY)
     targetX = int(tapX + 5 * Rnd())
@@ -236,13 +245,17 @@ Sub SwipeAB(swipeAx, swipeAy,swipeBx,swipeBy)
 End Sub
 
 Sub PrintIfFind(msgStr)
-	If intX > -1 And intY > -1 Then
-		TracePrint msgStr
-	End If
+    If intX > -1 And intY > -1 Then
+        TracePrint msgStr
+    End If
 End Sub
 Sub DelayRnd(BaseDelay,RndDelay)
-	Delay BaseDelay + RndDelay*Rnd()
+    Delay BaseDelay + RndDelay*Rnd()
 End Sub
+
+
+
+
 
 '-----------------------------------------------------------------------------------------
 
@@ -328,10 +341,7 @@ While True
 	
 	'DailyMission
 	If Find({pic:"Page_DailyMission_68,18,109,38..png", tapMode:DoNothing}) Then 
-		
-		
-		
-		SwipeAB 384,305,389,233
+		'SwipeAB 384,305,389,233
 	End If
 	
 	
@@ -369,11 +379,11 @@ Function JoinOnlineBattle
 		rooms_Y(3) = 458
 		Dim roomCount
 			
-		If FindColorFunc(157, 458, 157, 458, "F7965A") Then 
+		If Find({findRect:"157,458,157,458" , color:"F7965A",tapMode:DoNothing}) Then 
 			roomCount = 3
-		ElseIf FindColorFunc(157, 331, 157, 331, "F7965A") Then 
+		ElseIf Find({findRect:"157,331,157,331", color:"F7965A",tapMode:DoNothing}) Then 
 			roomCount = 2
-		ElseIf FindColorFunc(157, 204, 157, 204, "F7965A") Then 
+		ElseIf Find({findRect:"157,204,157,204", color:"F7965A",tapMode:DoNothing}) Then 
 			roomCount = 1
 		Else 
 			'search Room
@@ -422,7 +432,7 @@ Function JoinOnlineBattle
 	'In The Battle
 	If Find({pic:"OnlineBattle_ChatIcon_902,92,926,115..png", tapMode:DoNothing}) Then 
 		'AutoSkill 283-763,409
-		'Find({color})
+		Find({findRect:"283,409,763,409",color:"00CFFF"})
 		
 	
 		'WinPage
@@ -469,19 +479,19 @@ Function Dungeon
 		
 		
 		'VH Dungeon
-		If FindFuzzyPicFunc(304, 200, 594, 386, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+		If FindPicFunc(304, 200, 594, 386, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
 			TapIfFind 
 			Delay 300
 		End If
-		If FindFuzzyPicFunc(33,215,214,303, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+		If FindPicFunc(33,215,214,303, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
 			TapIfFind 
 			Delay 300
 		End If
-		If FindFuzzyPicFunc(33,215,214,303, "Feature_DungeonChest2_+10,10..png",direct, 0.7) Then 
+		If FindPicFunc(33,215,214,303, "Feature_DungeonChest2_+10,10..png",direct, 0.7) Then 
 			TapIfFind 
 			Delay 300
 		End If
-		If FindFuzzyPicFunc(481,171,712,369, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
+		If FindPicFunc(481,171,712,369, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
 			TapIfFind 
 			Delay 300
 		End If
@@ -489,11 +499,11 @@ Function Dungeon
 	
 	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
 	
-	FindPicFunc 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
+	FindPicFunc_v121 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
 	If HasFind() Then 
 		'check member is full
 		
-		If Not FindPicFunc(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
+		If Not FindPicFunc_v121(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
 			TapRect 786, 444, 893, 462
 		Else 
 			'delay 5~10s
@@ -567,26 +577,26 @@ End Function
 
 'Story ------------
 Function IsStoryPage
-	IsStoryPage = FindPicFunc(321, 522, 352, 534, "PageFeature_Story_321,522,352,534..png")
+	IsStoryPage = FindPicFunc_v121(321, 522, 352, 534, "PageFeature_Story_321,522,352,534..png")
 End Function
 Function IsCharacterStoryPage_NewTag
-	IsCharacterStoryPage_NewTag = FindPicFunc(477,24,535,44, "Feature_NewCharStory_477,24,535,44..png")	
+	IsCharacterStoryPage_NewTag = FindPicFunc_v121(477,24,535,44, "Feature_NewCharStory_477,24,535,44..png")	
 End Function
 Function IsCharacterStoryDetailPage
-	IsCharacterStoryDetailPage = FindPicFunc(566,43,608,54, "Feature_Story_CharacterDetail_566,43,608,54..png")
+	IsCharacterStoryDetailPage = FindPicFunc_v121(566,43,608,54, "Feature_Story_CharacterDetail_566,43,608,54..png")
 End Function
 Function IsNoNewCharacterRankStory
 	Dim NoNewRank8Story
 	Dim NoNewRankNStory
-	NoNewRank8Story = FindPicFunc(482, 137, 514, 140, "Feature_NoNewCharacterStory_482,137,514,140..png")
-	NoNewRankNStory = FindPicFunc(480, 194, 507, 197, "Feature_NoNewCharacterStory_480,194,507,197..png")
+	NoNewRank8Story = FindPicFunc_v121(482, 137, 514, 140, "Feature_NoNewCharacterStory_482,137,514,140..png")
+	NoNewRankNStory = FindPicFunc_v121(480, 194, 507, 197, "Feature_NoNewCharacterStory_480,194,507,197..png")
 	IsNoNewCharacterRankStory = NoNewRank8Story Or NoNewRankNStory
 End Function
 Function StoryVoiceDownload_Tap_NoVoice
 	TapRangeIfFindPic(420,139,537,155, "Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
 End Function
 Function IsInTheStory
-	IsInTheStory = FindPicFunc(931,55,903,29, "Btn_StoryMenu_931,55,903,29..png")
+	IsInTheStory = FindPicFunc_v121(931,55,903,29, "Btn_StoryMenu_931,55,903,29..png")
 End Function
 Function InTheStory_Tap_Skip
 	TapIfFindPic(793,29,819,60, "Btn_InTheStoryMenu_Skip_793,29,819,60..png")
@@ -594,7 +604,7 @@ End Function
 
 'Dungeon ------------
 Function IsDungeonPage
-	IsDungeonPage = FindPicFunc(491, 427, 491 + 116, 427 + 14, "PageFeature_Dungeon_491,427+116,14..png")
+	IsDungeonPage = FindPicFunc_v121(491, 427, 491 + 116, 427 + 14, "PageFeature_Dungeon_491,427+116,14..png")
 End Function
 
 'BattleEnd ----------
@@ -621,15 +631,25 @@ End Function
 
 '-----------------------------------------------------------------------------------------
 '------------------------------- anjain advance function 1.1 -----------------------------
+
+Function FindPicFunc_v121(x1,y1,x2,y2,picName)
+    FindPicFunc_v121 = False
+    FindPic x1, y1 ,x2 ,y2 ,  "Attachment:" & picName, "000000", 0, 0.9, intX, intY
+    If intX > -1 And intY > -1 Then 
+        TracePrint "Find " & picName
+        FindPicFunc_v121 = True
+    End If
+End Function
+
 Function TapPicRectIfFind(x1,y1,x2,y2,picName)
-    tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+    tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
     TapPicRectIfFind = tempBool
     If tempBool Then
         TapRect(x1,y1,x2,y2)
     End If
 End Function
 Function TapRectIfFind(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
-    tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+    tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
     TapRectIfFind = tempBool
     If tempBool Then
         TapRect(tapX1,tapY1,tapX2,tapY2)
@@ -637,7 +657,7 @@ Function TapRectIfFind(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
 End Function
 
 Function TapXyIfFind(x1,y1,x2,y2,picName,tapX,tapY)
-    tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+    tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
     TapXyIfFind = tempBool
     If tempBool Then
         TapXy(tapX,tapY)
@@ -645,21 +665,21 @@ Function TapXyIfFind(x1,y1,x2,y2,picName,tapX,tapY)
 End Function
 
 Function TapIfFindPic(x1,y1,x2,y2,picName)
-	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
 	TapIfFindPic = tempBool
 	If tempBool Then
 		TapFind
 	End If
 End Function
 Function ShiftTapIfFindPic(x1,y1,x2,y2,picName,shiftX,shiftY)
-	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
 	ShiftTapIfFindPic = tempBool
 	If tempBool Then
 		TapXy(shiftX + intX,shiftY + intY)
 	End If
 End Function
 Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
-	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
 	TapRangeIfFindPic = tempBool
 	If tempBool Then
 		TapRect(tapX1,tapY1,tapX2,tapY2)
@@ -667,7 +687,7 @@ Function TapRangeIfFindPic(x1,y1,x2,y2,picName,tapX1,tapY1,tapX2,tapY2)
 End Function
 
 Function TapXyIfFindPic(x1,y1,x2,y2,picName,tapX,tapY)
-	tempBool = FindPicFunc(x1, y1, x2, y2, picName)
+	tempBool = FindPicFunc_v121(x1, y1, x2, y2, picName)
 	TapXyIfFindPic = tempBool
 	If tempBool Then
 		TapXy(tapX,tapY)
