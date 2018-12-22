@@ -593,7 +593,7 @@ Function IsStoryPage
 	IsStoryPage = FindPicFunc_v121(321, 522, 352, 534, "PageFeature_Story_321,522,352,534..png")
 End Function
 Function IsCharacterStoryPage_NewTag
-	IsCharacterStoryPage_NewTag = FindPicFunc_v121(477,24,535,44, "Feature_NewCharStory_477,24,535,44..png")	
+	IsCharacterStoryPage_NewTag = FindPicFunc_v121(477,24,535,44, "Feature_NewCharStory_477,24,535,44..png")
 End Function
 Function IsCharacterStoryDetailPage
 	IsCharacterStoryDetailPage = FindPicFunc_v121(566,43,608,54, "Feature_Story_CharacterDetail_566,43,608,54..png")
