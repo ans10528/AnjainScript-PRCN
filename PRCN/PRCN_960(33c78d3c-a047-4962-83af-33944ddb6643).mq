@@ -337,7 +337,14 @@ While True
 	'--------
 	ClearNewCharacterStory
 	JoinOnlineBattle
-	Dungeon
+	Dungeon 
+	
+	'ClanBattle
+	If Find({pic:"ClanBattlePage_67,38,111,32..png", tapMode:DoNothing}) Or _
+	   Find({pic:"ClanBattle_BattleReady_103,454,161,463..png", tapMode:DoNothing}) Then 
+		EndScript
+	End If
+	
 
 	'Global
 	PlayerLvUpMsgbox
