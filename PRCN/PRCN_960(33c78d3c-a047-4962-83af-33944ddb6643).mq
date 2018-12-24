@@ -327,6 +327,8 @@ While True
 	//work
 	'TestCode
 	
+	'Find({pic:"Battle_Skill_Alisa_225,395,256,420..png"})
+	
 	'--------
 	
 	'BattleEnd
@@ -353,13 +355,15 @@ While True
 	Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"})
 	
 	'Login
-	Find ({pic:"LoginMenu_34,497,56,520..png"})
-	Find ({pic:"LoginAccountLink_352,362,386,375..png"})
-	Find ({pic:"LoginKokoroBook_899,31,927,45..png"})
-	Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"})
+	If	   Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
+	ElseIf Find ({pic:"LoginAccountLink_352,362,386,375..png"}) Then
+	ElseIf Find ({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
+	ElseIf Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"}) Then
+	ElseIf Find({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
+
 	
 	'DailyMission
-	If Find({pic:"Page_DailyMission_68,18,109,38..png", tapMode:DoNothing}) Then 
+	ElseIf Find({pic:"Page_DailyMission_68,18,109,38..png", tapMode:DoNothing}) Then 
 		'SwipeAB 384,305,389,233
 	End If
 	
