@@ -119,7 +119,7 @@ Function Find(p)
         	find_y2 = ArrTemp(1)
         	FindFuncParam = FindFuncParam + 1000
         Else 
-        	TracePrint "Error: picName FindRect Not Match :" & picName
+        	TracePrint "Error: picName FindRect Not Match :" & picName & " , " & FindAction
         End If
     End If
     
@@ -361,7 +361,7 @@ While True
 			End If
 		End If
 	End If
-	Find ({pic:"Shop_Exp40k_Buy_274.81,518,303..png",Dot:"571,434"})
+	Find ({pic:"Shop_Exp40k_Buy_274,81,518,303..png",Dot:"571,434"})
 	Find ({pic:"Shop_Exp100k_Buy_281,86,514,302..png", Dot:"571,434"})
 	Find ({pic:"Shop_BuyOk_443,139,514,153..png", Dot:"489,376"})
 	
@@ -473,9 +473,12 @@ Function JoinOnlineBattle
 	Find({Pic:"Btn_Battle_AutoSkill_896,411,927,430..png"})
 	
 	'In The Battle
+	
 	If Find({pic:"OnlineBattle_ChatIcon_902,92,926,115..png", tapMode:DoNothing}) Then 
 		'AutoSkill 283-763,409
-		Find({findRect:"283,409,763,409",color:"00CFFF",Direct:rand})
+		If Find({findRect:"199,506",color:"C6BEAD"})
+			Find ({findRect:"283,409,763,409", color:"00CFFF", Direct:rand})
+		End If
 		
 		'WinPage
 		Find({pic:"OnlineBattle_Win_NextBtn_803,482,863,499..png"})
@@ -500,9 +503,6 @@ Function JoinOnlineBattle
 	'Find({Pic:"OnlineBarttle_JpRoomClose_385,248,558,260.,png",Dot:"475,367"})
 	
 	
-	'TODO List:
-	'2.auto support skill
-	'6.Leader was sort battle order
 End Function
 
 Function Dungeon
