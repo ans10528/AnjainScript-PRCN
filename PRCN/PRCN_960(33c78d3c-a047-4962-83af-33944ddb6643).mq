@@ -382,18 +382,13 @@ EndScript
 Dim LastArenaType
 Function Arena
 	If Find({pic:"ArenaPage_69,22,127,34..png", Dot:"586,167"}) Then 
-		LastArenaType="Arena"
-		
-	ElseIf Find({pic:"PArenaPage_150,41,77,20..png",Dot:"586,167"}) Then 	
-		LastArenaType="PArena"
-	
-		'Find {Pic:"Btn_OnlineBattle_A-II_487,109,602,162..png"}
+		LastArenaType = "Arena"
+	ElseIf Find({pic:"PArenaPage_150,41,77,20..png", Dot:"586,167"}) Then
+		LastArenaType = "PArena"
 	End If
-	
-	
+		
 	If Find({pic:"PArena_BattleEndReport_759,183,827,213..png", Dot:"812,492"}) Then 
-	
-	
+
 	'ChangeArena
 	ElseIf Find({pic:"Arena_CooldownMsg_436,249,513,283..png", Dot:"373,368"}) Then
 		DelayRnd 1500, 500
@@ -404,10 +399,17 @@ Function Arena
 		Else
 			TapXy 590, 401
 		End If
+	'ExitArena
+	ElseIf Find({pic:"Arena_BattleLimitMsg_422,198,561,213..png", Dot:"381,372"}) Then
+		DelayRnd 1500, 500
+		TapXy 30, 33
+		DelayRnd 2000, 500
+		'GotoOnlineBattle?
+		'TapXy 738,276
 	End If
-	
-	
-	
+End Function
+Function Arena_Change
+
 End Function
 
 Function ShopExp
