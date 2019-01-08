@@ -328,7 +328,7 @@ While True
 	'TestCode
 	
 	'Find({pic:"Battle_Skill_Alisa_225,395,256,420..png"})
-	
+	Arena
 	'--------
 	
 	'BattleEnd
@@ -339,33 +339,14 @@ While True
 	'--------
 	ClearNewCharacterStory
 	JoinOnlineBattle
-	Dungeon 
+	Dungeon
+	ShopExp 
 	
-	'ClanBattle
+	'ClanBattleStopScript
 	If Find({pic:"ClanBattlePage_67,38,111,32..png", tapMode:DoNothing}) Or _
 	    Find({pic:"ClanBattle_BattleReady_103,454,161,463..png", tapMode:DoNothing}) Then 
 		EndScript
 	End If
-	
-	'shop exp
-	If Find({pic:"ShopPage_111,38,70,17..png", tapMode:DoNothing}) And _ 
-		Find({pic:"Shop_NormalTag_268,66,314,75..png", tapMode:DoNothing}) Then 
-		If Find({pic:"Shop_NormalTag_268,66,314,75..png", tapMode:DoNothing}) Then 
-			If Find({pic:"Shop_Exp1_40k_319,217,340,236..png",Dot:"323,381"}) Then 
-			ElseIf Find({pic:"Shop_Exp2_40k_496,214,513,231..png",Dot:"504,383"}) Then 
-			ElseIf Find({pic:"Shop_Exp3_100k_660,211,682,237..png",Dot:"667,382"}) Then 
-			ElseIf Find({pic:"Shop_Exp4_100k_831,210,856,236..png", Dot:"851,380"}) Then
-			Else 
-				SwipeAB 926, 359, 924, 234
-				DelayRnd 2000,1000
-			End If
-		End If
-	End If
-	Find ({pic:"Shop_Exp40k_Buy_274,81,518,303..png",Dot:"571,434"})
-	Find ({pic:"Shop_Exp100k_Buy_281,86,514,302..png", Dot:"571,434"})
-	Find ({pic:"Shop_BuyOk_443,139,514,153..png", Dot:"489,376"})
-	
-	
 	
 
 	'Global
@@ -397,6 +378,56 @@ EndScript
 '-----------------------------------------------------------------------------------------
 '---------------------------------------- Script -----------------------------------------
 'Unschedulable script ----------
+
+Dim LastArenaType
+Function Arena
+	If Find({pic:"ArenaPage_69,22,127,34..png", Dot:"586,167"}) Then 
+		LastArenaType="Arena"
+		
+	ElseIf Find({pic:"PArenaPage_150,41,77,20..png",Dot:"586,167"}) Then 	
+		LastArenaType="PArena"
+	
+		'Find {Pic:"Btn_OnlineBattle_A-II_487,109,602,162..png"}
+	End If
+	
+	
+	If Find({pic:"PArena_BattleEndReport_759,183,827,213..png", Dot:"812,492"}) Then 
+	
+	
+	'ChangeArena
+	ElseIf Find({pic:"Arena_CooldownMsg_436,249,513,283..png", Dot:"373,368"}) Then
+		DelayRnd 1500, 500
+		TapXy 30, 33
+		DelayRnd 2000, 500
+		If LastArenaType = "Arena" Then 
+			TapXy 837, 408
+		Else
+			TapXy 590, 401
+		End If
+	End If
+	
+	
+	
+End Function
+
+Function ShopExp
+	If Find({pic:"ShopPage_111,38,70,17..png", tapMode:DoNothing}) And _ 
+		Find({pic:"Shop_NormalTag_268,66,314,75..png", tapMode:DoNothing}) Then 
+		If Find({pic:"Shop_NormalTag_268,66,314,75..png", tapMode:DoNothing}) Then 
+			If Find({pic:"Shop_Exp1_40k_319,217,340,236..png",Dot:"323,381"}) Then 
+			ElseIf Find({pic:"Shop_Exp2_40k_496,214,513,231..png",Dot:"504,383"}) Then 
+			ElseIf Find({pic:"Shop_Exp3_100k_660,211,682,237..png",Dot:"667,382"}) Then 
+			ElseIf Find({pic:"Shop_Exp4_100k_831,210,856,236..png", Dot:"851,380"}) Then
+			Else 
+				SwipeAB 926, 359, 924, 234
+				DelayRnd 2000,1000
+			End If
+		End If
+	End If
+	Find ({pic:"Shop_Exp40k_Buy_274,81,518,303..png",Dot:"571,434"})
+	Find ({pic:"Shop_Exp100k_Buy_281,86,514,302..png", Dot:"571,434"})
+	Find ({pic:"Shop_BuyOk_443,139,514,153..png", Dot:"489,376"})
+End Function
 
 Dim IsOnlineBattleRoomPageCount
 Function JoinOnlineBattle
