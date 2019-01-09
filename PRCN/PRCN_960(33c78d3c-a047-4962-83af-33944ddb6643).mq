@@ -548,11 +548,15 @@ Function Dungeon
 	
 	If tmp_isDungeonPage Then 
 		'EX Dungeon
+		
+		'boss
+		If Find({pic:"Dungeon_5StepFeature_260,260,357,344..png",tapMode:DoNothing}) then
+			Exit Function
+		End if
 		Find ({pic:"Dungeon_StepFeature_683,352,724,383..png"})
 		Find ({pic:"Dungeon_2StepFeature_586,320,651,387..png"})
 		Find ({pic:"Dungeon_3StepFeature_306,343,352,385..png"})
 		Find ({pic:"Dungeon_4StepFeature_660,339,718,391..png"})
-		'Find ({pic:"Dungeon_5StepFeature_260,260,357,344..png"}) boss
 		
 		
 		'VH Dungeon
