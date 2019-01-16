@@ -390,6 +390,7 @@ Function Arena
 	If Find({pic:"PArena_BattleEndReport_759,183,827,213..png", Dot:"812,492"}) Then 
 	ElseIf Find({pic:"PArena_DefSuccessReport_441,36,516,49..png", Dot:"368,482"}) Then 
 	ElseIf Find({pic:"Arena_DefSuccessReport_443,139,514,152..png", Dot:"376,374"}) Then
+	ElseIf Find({pic:"Arena_RankUp_505,51,446,37..png", Dot:"476,477"}) Then
 	
 	'ChangeArena
 	ElseIf Find({pic:"Arena_CooldownMsg_436,249,513,283..png", Dot:"373,368"}) Then
