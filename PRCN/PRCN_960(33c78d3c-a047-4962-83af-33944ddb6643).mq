@@ -396,13 +396,13 @@ Function Arena
 	'ChangeArena
 	ElseIf Find({pic:"Arena_CooldownMsg_436,249,513,283..png", Dot:"373,368"}) Then
 		DelayRnd 1500, 500
-		TapXy 30, 33
+		'TapXy 30, 33
 		DelayRnd 2000, 500
-		If LastArenaType = "Arena" Then 
-			TapXy 837, 408
-		Else
-			TapXy 590, 401
-		End If
+		'If LastArenaType = "Arena" Then 
+		'	TapXy 837, 408
+		'Else
+		'	TapXy 590, 401
+		'End If
 	'ExitArena
 	ElseIf Find({pic:"Arena_BattleLimitMsg_422,198,561,213..png", Dot:"381,372"}) Then
 		DelayRnd 1500, 500
