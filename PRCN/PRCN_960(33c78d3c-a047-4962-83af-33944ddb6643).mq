@@ -328,7 +328,17 @@ While True
 	'TestCode
 	
 	'Find({pic:"Battle_Skill_Alisa_225,395,256,420..png"})
-	Arena
+	Arena 
+	
+	'--------
+	
+	'Runa
+	If Find({pic:"Runa_51F_356,109,341,92..png", tapMode:DoNothing}) Then 
+		EndScript
+	ElseIf Find({pic:"Runa_Battle_861,429,798,419..png"}) Then
+	
+	End If
+	
 	'--------
 	
 	'BattleEnd
