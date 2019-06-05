@@ -358,7 +358,7 @@ While True
 	'TestCode
 	
 	'Find({pic:"Battle_Skill_Alisa_225,395,256,420..png"})
-	Arena 
+	 
 	
 	'--------
 	
@@ -379,8 +379,9 @@ While True
 	'--------
 	ClearNewCharacterStory
 	'JoinOnlineBattle
-	Dungeon 
-	Explore
+	Explore 
+	Arena
+	Dungeon
 	ShopExp
 	
 	'ClanBattleStopScript
@@ -615,8 +616,6 @@ Function Explore()
 			Delay 800
 			TapXy 30,27
 			Delay 1200
-			TapXy 30,27
-			Delay 1200
 		Else
 			Delay 800
 			TapXy 884, 328
@@ -626,32 +625,68 @@ Function Explore()
 			TapXy 568,367
 			Delay 1200
 		End If
+	ElseIf ExploreExpClear = True And ExploreManaClear = True And TryFind({Pic:"Explore_exp_538,140,641,281..png"}) Then
+		TapXy 30,27
+		Delay 1200
 
 	ElseIf Find({Pic:"Explore_qc_return_expBG_63,38,164,63..png"}) Then
 		ExploreExpClear = True
 	ElseIf Find({Pic:"Explore_qc_return_manaBG_65,42,140,62..png"}) Then
 		ExploreManaClear = True
-	ElseIf False Then
-	ElseIf False Then
-	ElseIf False Then
+
 	Else 
 		Explore = false
 	End If
 End Function
 
+
+Dim DungeonPhase
+'DungeonPhase = null,"climb","boss","clear"
 Function Dungeon
 
 	Dim direct
 	direct = Rnd() * 3
+	
+	If DungeonPhase = "clear" Then 
+		Exit Function
+	End If
+	
+	'battle config
+	FindPicFunc_v121 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
+	If HasFind() Then 
+		'check member is full
+		
+		If Not FindPicFunc_v121(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
+			TapRect 786, 444, 893, 462
+		ElseIf Find({pic:"BattleReady_MyTeam_835,84,896,101..png"}) Then
+		Else 
+		End If
+		DelayRnd 2000, 500
+
+	ElseIf DungeonPhase = null And Find({pic:"MyTeam_1_753,164,822,186..png"}) Then
+		DungeonPhase = "climb"
+	ElseIf DungeonPhase = "boss" And Find({pic:"MyTeam_2_753,281,814,307..png"}) Then
+		Delay 3000
+		TapXy 830,452
+	ElseIf DungeonPhase = "boss" And Find({pic:"MyTeam_3_762,400,830,422..png"}) Then
+	ElseIf Find({pic:"Dungeon_Failed_761,483,865,505..png"}) Then
+	ElseIf Find({pic:"Dungeon_clear_879,432,895,448..png", Dot:"38,27"}) Then
+		DungeonPhase = "clear"
+	End If
+	
+	'climb
 	Dim tmp_isDungeonPage
 	tmp_isDungeonPage = IsDungeonPage()
-	
-	
-	If tmp_isDungeonPage Then 
+	If false Then 
+	ElseIf Find({pic:"Dungeon_Ex_756,297,909,389..png"}) Then
+	ElseIf Find({pic:"Dungeon_SelectConfirm_418,136,542,159..png",Dot:"582,372"}) Then
+	ElseIf Find ({pic:"Dungeon_844,94,912,158..png"}) Then 
+	ElseIf tmp_isDungeonPage Then 
 		'EX Dungeon
 		
 		'boss
-		If Find({pic:"Dungeon_5StepFeature_260,260,357,344..png",tapMode:DoNothing}) then
+		If Find({pic:"Dungeon_5StepFeature_260,260,357,344..png"}) Then 
+			DungeonPhase = "boss"
 			Exit Function
 		End if
 		Find ({pic:"Dungeon_StepFeature_683,352,724,383..png"})
@@ -680,18 +715,6 @@ Function Dungeon
 	End If
 	
 	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
-	
-	FindPicFunc_v121 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
-	If HasFind() Then 
-		'check member is full
-		
-		If Not FindPicFunc_v121(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
-			TapRect 786, 444, 893, 462
-		Else 
-			'delay 5~10s
-			DelayRnd 5000,5000
-		End If
-	End If
 	
 	Find({ Pic:"Msgbox_Dungeon_BattleResult_441,33,505,52..png", Rect:"398,471,546,487"})
 End Function
