@@ -426,8 +426,13 @@ Dim ArenaClear
 Dim PArenaClear
 Function Arena
 	If False Then 
-	ElseIf ArenaClear <> true And Find({pic:"Arena_549,378,655,422..png"}) Then 
-	ElseIf PArenaClear <> true And Find({pic:"PArena_772,374,880,417..png"}) Then 
+	
+	ElseIf Find({pic:"BattleReady_Sort_458,32,513,58..png", Dot:"362,478"}) Then
+	
+	ElseIf ArenaClear <> true And _
+		(Find({pic:"Arena_549,378,655,422..png"}) Or Find({pic:"Arena_574,371,627,394..png"}))  Then 
+	ElseIf PArenaClear <> true And _
+		(Find({pic:"PArena_772,374,880,417..png"}) Or Find({pic:"PArena_813,374,880,405..png"})) Then 
 	ElseIf Find({pic:"ArenaPage_69,22,127,34..png", Dot:"586,167"}) Then 
 		LastArenaType = "Arena"
 	ElseIf Find({pic:"PArenaPage_150,41,77,20..png", Dot:"586,167"}) Then
@@ -464,6 +469,8 @@ Function Arena
 		
 		'GotoOnlineBattle?
 		'TapXy 738,276
+	ElseIf Find({pic:"Arena_PartyConfig_404,68,471,94..png", Dot:"835,447"}) Then
+	
 	End If
 End Function
 
@@ -680,7 +687,8 @@ Function Dungeon
 	If false Then 
 	ElseIf Find({pic:"Dungeon_Ex_756,297,909,389..png"}) Then
 	ElseIf Find({pic:"Dungeon_SelectConfirm_418,136,542,159..png",Dot:"582,372"}) Then
-	ElseIf Find ({pic:"Dungeon_844,94,912,158..png"}) Then 
+	ElseIf Find({pic:"Dungeon_844,94,912,158..png"}) Then
+	ElseIf Find({pic:"Dungeon_858,109,903,139..png"}) Then
 	ElseIf tmp_isDungeonPage Then 
 		'EX Dungeon
 		
