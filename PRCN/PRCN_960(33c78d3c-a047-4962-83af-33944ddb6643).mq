@@ -382,7 +382,7 @@ While True
 	Explore 
 	Arena
 	Dungeon
-	ShopExp
+	'ShopExp
 	
 	'ClanBattleStopScript
 	If Find({pic:"ClanBattlePage_67,38,111,32..png", tapMode:DoNothing}) Or _
@@ -600,11 +600,12 @@ Function JoinOnlineBattle
 	
 End Function
 
-Dim ExploreExpClear
-Dim ExploreManaClear
+Dim ExploreExpClear = False
+Dim ExploreManaClear = False
 Function Explore()
 	Explore = true
-	If (ExploreExpClear <> True Or ExploreManaClear <> True) And Find({Pic:"Explore_703,94,771,156..png"}) And Find({Pic:"Explore_689,90,785,183..png"}) then
+	If (ExploreExpClear <> True Or ExploreManaClear <> True) And _
+		(Find({Pic:"Explore_703,94,771,156..png"}) Or Find({Pic:"Explore_689,90,785,183..png"})) then
 	ElseIf ExploreExpClear <> True And Find({Pic:"Explore_exp_538,140,641,281..png"}) Then
 	ElseIf ExploreManaClear <> True And Find({Pic:"Explore_mana_758,143,850,260..png"}) then
 	ElseIf Find({Pic:"Explore_3Star_642,159,702,177..png"}) then
