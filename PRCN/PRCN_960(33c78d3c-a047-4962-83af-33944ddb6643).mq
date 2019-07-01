@@ -394,16 +394,16 @@ While True
 	'--------
 	
 	'BattleEnd
-	ElseIf WinPage_Tap_NextPageBtn Then
-	ElseIf ResultItemsPage_Tap_BattleAgainBtn Then
-	ElseIf CheckBattleAgainMsgbox_Tap_YesBtn  Then
+	ElseIf WinPage_Tap_NextPageBtn() Then
+	ElseIf ResultItemsPage_Tap_BattleAgainBtn() Then
+	ElseIf CheckBattleAgainMsgbox_Tap_YesBtn()  Then
 	
 	'--------
-	ElseIf ClearNewCharacterStory Then
+	ElseIf ClearNewCharacterStory() Then
 	'JoinOnlineBattle
-	ElseIf Explore Then
-	ElseIf Arena Then
-	ElseIf Dungeon Then
+	ElseIf Explore() Then
+	ElseIf Arena() Then
+	ElseIf Dungeon() Then
 	'ShopExp
 	
 	'ClanBattleStopScript
@@ -413,9 +413,9 @@ While True
 	
 
 	'Global
-	ElseIf  PlayerLvUpMsgbox Then
-	ElseIf  HeartStorySkip Then
-	ElseIf  ClanBattleCpCountMsgbox  Then
+	ElseIf  PlayerLvUpMsgbox() Then
+	ElseIf  HeartStorySkip() Then
+	ElseIf  ClanBattleCpCountMsgbox() Then
 	ElseIf  Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
 	
 	'Login
@@ -446,6 +446,7 @@ Dim LastArenaType
 Dim ArenaClear
 Dim PArenaClear
 Function Arena
+	Arena = true
 	If False Then 
 	
 	ElseIf Find({pic:"BattleReady_Sort_458,32,513,58..png", Dot:"362,478"}) Then
@@ -458,9 +459,9 @@ Function Arena
 		LastArenaType = "Arena"
 	ElseIf Find({pic:"PArenaPage_150,41,77,20..png", Dot:"586,167"}) Then
 		LastArenaType = "PArena"
-	End If
-		
-	If Find({pic:"PArena_BattleEndReport_112,150,170,179..png", Dot:"812,492"}) Then 
+
+	'IF	
+	ElseIf Find({pic:"PArena_BattleEndReport_112,150,170,179..png", Dot:"812,492"}) Then 
 	ElseIf Find({pic:"PArena_DefSuccessReport_441,36,516,49..png", Dot:"368,482"}) Then 
 	ElseIf Find({pic:"Arena_DefSuccessReport_443,139,514,152..png", Dot:"376,374"}) Then
 	ElseIf Find({pic:"Arena_RankUp_505,51,446,37..png", Dot:"476,477"}) Then
@@ -491,7 +492,8 @@ Function Arena
 		'GotoOnlineBattle?
 		'TapXy 738,276
 	ElseIf Find({pic:"Arena_PartyConfig_404,68,471,94..png", Dot:"835,447"}) Then
-	
+	Else 
+		Arena = false
 	End If
 End Function
 
@@ -672,17 +674,17 @@ End Function
 Dim DungeonPhase
 'DungeonPhase = null,"climb","boss","clear"
 Function Dungeon
-
-	Dim direct
-	direct = Rnd() * 3
+	
+	Dungeon = true
 	
 	If DungeonPhase = "clear" Then 
 		Exit Function
-	End If
+	'End If
 	
 	'battle config
-	FindPicFunc_v121 439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png"
-	If HasFind() Then 
+	'FindPicFunc_v121(439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png")
+	'If HasFind() Then 	
+	ElseIf FindPicFunc_v121(439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png") Then 
 		'check member is full
 		
 		If Not FindPicFunc_v121(53,451,78,502, "Feature_BeforeBattle_MemberNotFull_53,451,78,502..png") Then 
@@ -701,17 +703,15 @@ Function Dungeon
 	ElseIf Find({pic:"Dungeon_Failed_761,483,865,505..png"}) Then
 	ElseIf Find({pic:"Dungeon_clear_879,432,895,448..png", Dot:"38,27"}) Then
 		DungeonPhase = "clear"
-	End If
+	'End If
 	
 	'climb
-	Dim tmp_isDungeonPage
-	tmp_isDungeonPage = IsDungeonPage()
-	If false Then 
+	'If false Then 
 	ElseIf Find({pic:"Dungeon_Ex_756,297,909,389..png"}) Then
 	ElseIf Find({pic:"Dungeon_SelectConfirm_418,136,542,159..png",Dot:"582,372"}) Then
 	ElseIf Find({pic:"Dungeon_844,94,912,158..png"}) Then
 	ElseIf Find({pic:"Dungeon_858,109,903,139..png"}) Then
-	ElseIf tmp_isDungeonPage Then 
+	ElseIf IsDungeonPage() Then 
 		'EX Dungeon
 		
 		'boss
@@ -724,6 +724,8 @@ Function Dungeon
 		Find ({pic:"Dungeon_3StepFeature_306,343,352,385..png"})
 		Find ({pic:"Dungeon_4StepFeature_660,339,718,391..png"})
 		
+		Dim direct
+		direct = Rnd() * 3
 		
 		'VH Dungeon
 		If FindPicFunc(304, 200, 594, 386, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
@@ -742,11 +744,16 @@ Function Dungeon
 			TapIfFind 
 			Delay 300
 		End If
+		
+	ElseIf TapRangeIfFindPic(597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465) Then
+	ElseIf Find({Pic:"Msgbox_Dungeon_BattleResult_441,33,505,52..png", Rect:"398,471,546,487"}) Then	
+	Else 
+		Dungeon = false
 	End If
 	
-	TapRangeIfFindPic 597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465
 	
-	Find({ Pic:"Msgbox_Dungeon_BattleResult_441,33,505,52..png", Rect:"398,471,546,487"})
+	
+	
 End Function
 
 Function ClearNewCharacterStory
@@ -778,14 +785,13 @@ Function ClearNewCharacterStory
 
 	'Global -------
 	
-	ElseIf StoryVoiceDownload_Tap_NoVoice Then
+	ElseIf StoryVoiceDownload_Tap_NoVoice() Then
 	
 	ElseIf IsInTheStory() Then 
 		InTheStory_Tap_Skip 
 		If Not HasFind() Then 
 			TapRect 904,30,930,54
 		End If
-	End If
 	
 	'Msgbox_StoryBrief
 	ElseIf Find({Pic:"Msgbox_StoryBrief_441,138,515,153..png", Rect:"516,362,671,385"}) Then
