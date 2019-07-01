@@ -1,0 +1,450 @@
+'phadvAnjain ver 1.2.3
+'update:
+'1.2.2  find() enhancement
+'		tapMode: Dot
+'		Find Mode: Color
+' 	    Find param: direct
+'		RndRange func
+'		ShiftXY
+'1.2.3  TryFind() = find() TapMode:DoNothing
+'		Timer Table(  TimerUpdate(),GetTimerInterval(),isTimeOver() )
+'		"s"var  const string / table enum index
+'		MsgXy(),Msg()
+
+
+Randomize
+Dim intX,intY,targetX,targetY,targetX2,targetY2
+Dim tempBool
+Dim lastTapTime = TickCount()
+
+'-------------------------
+'Timer Table
+Dim Timer,sLastTap
+sLastTap = "sLastTap"
+Timer = {sLastTap:"0"}
+Timer[sLastTap] = TickCount()
+
+Function TimerUpdate(timerName)
+	Timer[timerName] = TickCount()
+	TimerUpdate = Timer[timerName]
+End Function
+Function GetTimerInterval(timerName, intervalMs)
+	GetTimerInterval = (TickCount() - Timer[timerName]) - intervalMs
+End Function
+Function isTimeOver(timerName, intervalMs)
+	isTimeOver = TickCount() - Timer[timerName] > intervalMs
+End Function
+
+'-------------------------
+'Find Func String
+Dim pic,findRect,tapMode,Rect,dropAB,DoNothing,tapFindXY,fuzzyRate,findDelay,Dot,color,Direct,rand,shiftXY
+pic = "pic"
+color = "color"
+findRect = "findRect"
+tapMode = "tapMode"
+Rect = "Rect"
+Dot = "Dot"
+dropAB = "dropAB"
+DoNothing = "DoNothing"
+tapFindXY = "tapFindXY"
+Direct = "Direct"
+fuzzyRate = "fuzzyRate"
+findDelay = "FindDelay"
+rand = "rand"
+shiftXY = "shiftXY"
+'-----------------------------------------------------------------------------------------
+'------------------------------- anjain advance function ---------------------------------
+'ex: "Btn_InTheStoryMenu_Skip_793,29,819,60..png" -> 793,29,819,60
+Function GetFindPicRangeFromFormattedPicName(picName)
+    Dim str1
+    str1 = picName
+    Dim last_
+    last_ = InStrRev(str1, "_", -1)
+    Dim dotdotPng
+    dotdotPng = InStrRev(str1, "..png", -1,true)
+    GetFindPicRangeFromFormattedPicName = Mid(str1,last_+1,dotdotPng-last_-1)
+End Function
+
+Function TapIfFind
+    If HasFind() Then
+        TapFind
+    End If
+End Function
+Function HasFind()
+    tempBool = intX > -1 And intY > -1
+    HasFind = tempBool
+End Function
+Sub TapFind
+    TapXy intX,intY
+End Sub
+Sub TapRect(tapX1,tapY1,tapX2,tapY2)
+    targetX = tapX1 + (tapX2-tapX1) * Rnd()
+    targetY = tapY1 + (tapY2 - tapY1) * Rnd()
+    TapXy targetX,targetY
+End Sub
+Function TryFind(p)
+    p[tapMode] = DoNothing
+    TryFind = Find(p)
+End Function
+Function Find(p)
+	Dim FindFuncParam '(rect,Name,direct,fuzzyRate)
+    Dim picName
+    Dim colorName
+    Dim find_x1,find_y1,find_x2,find_y2,ArrTemp()
+    Dim FindAction
+    Dim hasfindTemp
+    Dim fuzzyRateTemp
+    Dim findDirectTemp
+    Dim findDelayTemp
+    
+	'Read---------------------------------------------------------------
+    findDelayTemp = 0
+	If p[findDelay] <> null Then 
+		findDelayTemp = int(p[findDelay])
+	End If
+	
+    'Condition--------------------------------------------------------
+    fuzzyRateTemp = 0.9
+    findDirectTemp = 1
+    
+    'search target --------------------------------------
+    If p[pic] <> null Then 
+        picName = p[pic]
+        FindFuncParam = FindFuncParam + 0100
+
+    	If p[findRect] = null Then 
+			p[findRect] = GetFindPicRangeFromFormattedPicName(picName)
+    	End If
+    End If
+
+    If p[color] <> null Then 
+    	colorName = p[color]
+    	FindFuncParam = 0200
+    End If
+    
+    'search locate and config ----------------------------
+    If p[findRect] <> null Then 
+    	FindAction = findRect
+        ArrTemp = SplitComma(p[findRect])
+        If UBound(ArrTemp) = 3 Then 
+        	find_x1 = ArrTemp(0)
+        	find_y1 = ArrTemp(1)
+        	find_x2 = ArrTemp(2)
+        	find_y2 = ArrTemp(3)
+        	FindFuncParam = FindFuncParam + 1000
+        ElseIf UBound(ArrTemp) = 1 Then 
+        	find_x1 = ArrTemp(0)
+        	find_y1 = ArrTemp(1)
+        	find_x2 = ArrTemp(0)
+        	find_y2 = ArrTemp(1)
+        	FindFuncParam = FindFuncParam + 1000
+        Else 
+        	TracePrint "Error: picName FindRect Not Match :" & picName
+        End If
+    End If
+    
+    If p[fuzzyRate] <> null Then 
+    	fuzzyRateTemp = p[fuzzyRate] + 0.0
+        FindFuncParam = FindFuncParam + 0001
+    End If
+    If p[Direct] <> null Then 
+    	'0 2
+    	' 1 
+    	'3 4
+    	If p[Direct] = rand Then 
+    		findDirectTemp = RndRange(0,4)
+    	Else 
+    		findDirectTemp = p[Direct]
+    	End If
+        FindFuncParam = FindFuncParam + 0010
+    End If
+    
+    If p[pic] <> null Then
+    	FindPicFunc find_x1, find_y1, find_x2, find_y2, picName, findDirectTemp, fuzzyRateTemp
+    ElseIf p[color] <> null Then
+    	FindColorFunc find_x1, find_y1, find_x2, find_y2, colorName, findDirectTemp, fuzzyRateTemp
+	End If
+	
+	'Action-----------------------------------------------------------
+	Dim tap_x1,tap_y1,tap_x2,tap_y2
+	If p[Rect] <> null Then 
+        ArrTemp = SplitComma(p[Rect])
+        tap_x1 = ArrTemp(0)
+        tap_y1 = ArrTemp(1)
+        tap_x2 = ArrTemp(2)
+        tap_y2 = ArrTemp(3)
+        FindAction = Rect
+	End If
+	If p[dropAB] <> null Then 
+        ArrTemp = SplitComma(p[dropAB])
+        tap_x1 = ArrTemp(0)
+        tap_y1 = ArrTemp(1)
+        tap_x2 = ArrTemp(2)
+        tap_y2 = ArrTemp(3)
+        FindAction = dropAB
+	End If
+	If p[Dot] <> null Then 
+        ArrTemp = SplitComma(p[Dot])
+        tap_x1 = ArrTemp(0)
+        tap_y1 = ArrTemp(1)
+        FindAction = Dot
+	End If
+	If p[shiftXY] <> null Then 
+		FindAction = shiftXY
+	End If
+	
+	'override FindAction
+	If p[tapMode] <> null Then 
+		FindAction = p[tapMode]
+	End If
+	
+	hasfindTemp = HasFind()
+	If hasfindTemp Then 
+		Select Case FindAction
+			Case findRect
+				TapRect find_x1, find_y1, find_x2, find_y2
+			Case Rect
+				TapRect tap_x1, tap_y1, tap_x2, tap_y2
+			Case dropAB
+				SwipeAB tap_x1, tap_y1, tap_x2, tap_y2, 100
+			Case Dot
+				TapXy tap_x1, tap_y1
+			Case tapFindXY
+				TapFind
+			Case shiftXY
+        		ArrTemp = SplitComma(p[shiftXY])
+				intX = intX + ArrTemp(0)
+				intY = intY + ArrTemp(1)
+				TapFind
+			Case DoNothing
+				'DoNothing
+			Case Else
+				TracePrint "Error: FindAction= " & FindAction
+		End Select
+		Delay findDelayTemp
+	End If
+	
+	Find = hasfindTemp
+End Function
+Function ReadIntParam(strParam1)
+	ReadIntParam = null
+	If strParam1 <> null Then 
+		ReadIntParam = int(strParam1)
+	End If
+End Function
+
+'-----------------------------------------------------------------------------------------
+'----------------------------------- anjain Base API -------------------------------------
+Function SplitComma(str1)
+	SplitComma = Split(str1,",")
+End Function
+Function SplitArrStr(str1)
+	SplitArrStr = Split(str1,"|")
+End Function
+
+Function FindColorFunc(x1, y1, x2, y2, colorName,direct,fuzzyRate)
+    FindColorFunc = False
+    FindColor x1, y1 ,x2 ,y2 , colorName,direct,fuzzyRate,intX,intY
+    If intX > -1 And intY > -1 Then 
+        TracePrint Now() & " Find " & colorName & " " & intX & "," & intY
+        FindColorFunc = True
+    End If
+End Function
+Function FindPicFunc(x1,y1,x2,y2,picName,direct,fuzzyRate)
+    FindPicFunc = False
+    FindPic x1, y1 ,x2 ,y2 ,  "Attachment:" & picName, "000000", direct, fuzzyRate, intX, intY
+    If intX > -1 And intY > -1 Then 
+        TracePrint Now() & " Find " & picName & " " & intX & "," & intY
+        FindPicFunc = True
+    End If
+End Function
+
+Sub TapXy(tapX, tapY)
+    targetX = int(tapX + 5 * Rnd())
+    targetY = int(tapY + 5 * Rnd())
+    Dim WakuUpTimeMS
+    WakuUpTimeMS = 10 + Sqr(TickCount() - lastTapTime) * 10 * Rnd()
+    Delay WakuUpTimeMS
+    Tap targetX, targetY
+    lastTapTime = TickCount()
+    TracePrint "Tap " & targetX & "," & targetY
+    Delay 10 + 15 * Rnd()
+End Sub
+Sub SwipeAB(swipeAx,swipeAy,swipeBx,swipeBy,keepTimeMs)
+    if keepTimeMs = 0 
+        keepTimeMs = 100
+    end if
+    targetX = int(swipeAx + 5 * Rnd())
+    targetY = int(swipeAy + 5 * Rnd())
+    targetX2 = int(swipeBx + 5 * Rnd())
+    targetY2 = int(swipeBy + 5 * Rnd())
+    Dim WakuUpTimeMS
+    WakuUpTimeMS = 10 + Sqr(TickCount() - lastTapTime) * 10 * Rnd()
+    Delay WakuUpTimeMS
+    Swipe targetX, targetY, targetX2, targetY2, keepTimeMs
+    lastTapTime = TickCount()
+    TracePrint "Swipe " & targetX & "," & targetY & " to " &  targetX2 & "," & targetY2 & ",keepMs:" & keepTimeMs
+    Delay 10 + 15 * Rnd()
+End Sub
+
+Sub PrintIfFind(msgStr)
+    If intX > -1 And intY > -1 Then
+        TracePrint msgStr
+    End If
+End Sub
+Sub Msg(msgStr, showMs, posStrXY)
+	Dim posX,posY,ArrTemp
+    If posStrXY <> null Then 
+        ArrTemp = SplitComma(posStrXY)
+        If UBound(ArrTemp) = 1 Then 
+        	posX = ArrTemp(0)
+        	posY = ArrTemp(1)
+       	End If
+    End If
+    
+    If posY <> null Then 
+		ShowMessage msgStr, showMs, posX, posY
+	else
+		ShowMessage msgStr, showMs
+    End If
+	TracePrint msgStr
+End Sub
+Sub MsgXy(msgStr,showMs,posX,posY)
+	ShowMessage msgStr, showMs, posX, posY
+	TracePrint msgStr
+End Sub
+Sub DelayRnd(BaseDelay,RndDelay)
+    Delay BaseDelay + RndDelay*Rnd()
+End Sub
+Function RndRange(min,max)
+	RndRange = Int((max - min + 1) * Rnd() + min)
+End Function
+
+'-----------------------------------------------------------------------------------------
+
+'PRCN 960p SP miniGame
+'Main Loop
+
+
+
+
+
+'Timer -------------------------------------------------------------
+Dim sCurLoopTime = "sCurLoopTime"
+
+
+'stats flag ---------------------------------------------------------
+Dim sMsgPos_MapDown = "784,184"
+
+
+
+
+
+
+Function TestFunc()
+    Dim tmp1
+    tmp1 = "Test"
+    '-----------------------------
+    Rem TestStart
+    '-----------------------------
+	
+
+
+    '-----------------------------
+    Goto TestStart
+    EndScript
+End Function
+
+Dim CommonDelay,CommonDelayRnd
+CommonDelay = 800
+CommonDelayRnd = 100
+
+Dim LeftTargetPos = 453.0 - 30
+Dim RightTargetPos = 543.0 + 30
+Dim YTargetPos = 409
+'pixel_X /Ms
+Dim Speed = 0
+
+'righshift 15
+'leftshift 51
+Dim LeftBoundPos = 224.0
+Dim RightBoundPos = 760.0
+'mid497
+
+'Dim hrtX[3] = {0,0,0}
+Dim harX_last = LeftBoundPos
+Dim harX_cur = LeftBoundPos
+Dim HeartMoveToRight = true
+'Dim HeartDetectMode = "Init"
+
+Dim LastCalSpeedTime = TickCount()
+Dim DetectDelay = 100.0
+
+While true
+	'debug------------------------
+    'TestFunc()
+    'EndScript
+	'-----------------------------
+	KeepCapture 
+	Dim intXX
+	FindColor 225, 409, 760, 409, "BDAEFF", 0, 1.0, intXX, intY
+	'FindColor 431, 409, 534, 409, "BDAEFF", 0, 1.0, intX, intY
+	If intXX > -1 And TryFind({pic:"Ingame_103,22,156,41..png"}) Then 
+		harX_last = harX_cur
+	 	harX_cur = intXX
+		
+		Dim curTime = TickCount()
+		Dim curTimeBaseMs = (curTime - LastCalSpeedTime)*1.0
+		LastCalSpeedTime = curTime
+		Speed = (harX_cur - harX_last) / curTimeBaseMs
+		TracePrint intXX
+		Dim d1 = 0
+		Dim d2 = 0
+		If Speed > 0 Then 
+			TracePrint "sp:" & Speed & "> d1:" &  (LeftTargetPos - harX_cur) / Speed
+			d1 = (LeftTargetPos - harX_cur) / Speed
+			d2 = (RightBoundPos - LeftTargetPos) / Speed - DetectDelay
+		ElseIf Speed < 0 Then
+			d1 = (RightTargetPos - harX_cur) / Speed
+			d2 = (LeftBoundPos - RightTargetPos) / Speed - DetectDelay
+			'TracePrint "<<" & d1 & "   " & d2
+		End If
+		
+		If d1 > 0 And d1 < 1000 And d2 > 0 And d2 < 2000 Then 
+			'TracePrint "sp:" & Speed & " d1:" & d1 & " d2:" & d2
+			Delay d1
+			Tap 479, 337
+			Delay d2
+		End If
+
+
+
+		Delay DetectDelay
+	'If False Then 
+	'ElseIf find({pic:""}) Then
+	'menu
+	ElseIf find({pic:"SelectShizu_500,163,682,354..png"}) Then
+		Delay 2000
+	ElseIf find({pic:"StartGame_530,419,593,449..png"}) Then
+		Delay 1000
+	ElseIf find({pic:"EndGameNext_816,482,880,504..png"}) Then
+		Delay 1000
+	ElseIf find({pic:"ExtResult_458,468,499,488..png"}) Then
+	Else 
+		
+	'
+	
+    End If
+	'Goto EndLoopWithOutDelay
+    'Rem EndLoop
+    'DelayRnd -GetTimerInterval(sCurLoopTime,CommonDelay), CommonDelayRnd
+    'Rem EndLoopWithOutDelay
+    ReleaseCapture
+Wend
+EndScript
+
+
+
+
+
+

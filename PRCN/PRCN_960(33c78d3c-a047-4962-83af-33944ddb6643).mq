@@ -9,13 +9,13 @@
 '1.2.3  TryFind() = find() TapMode:DoNothing
 '		Timer Table(  TimerUpdate(),GetTimerInterval(),isTimeOver() )
 '		"s"var  const string / table enum index
+'		MsgXy(),Msg()
 
 
 Randomize
 Dim intX,intY,targetX,targetY,targetX2,targetY2
 Dim tempBool
-Dim lastTapTime
-lastTapTime = TickCount()
+Dim lastTapTime = TickCount()
 
 '-------------------------
 'Timer Table
@@ -29,7 +29,7 @@ Function TimerUpdate(timerName)
 	TimerUpdate = Timer[timerName]
 End Function
 Function GetTimerInterval(timerName, intervalMs)
-	GetTimerInterval = TickCount() - Timer[timerName]
+	GetTimerInterval = (TickCount() - Timer[timerName]) - intervalMs
 End Function
 Function isTimeOver(timerName, intervalMs)
 	isTimeOver = TickCount() - Timer[timerName] > intervalMs
@@ -292,12 +292,36 @@ Sub PrintIfFind(msgStr)
         TracePrint msgStr
     End If
 End Sub
+Sub Msg(msgStr, showMs, posStrXY)
+	Dim posX,posY,ArrTemp
+    If posStrXY <> null Then 
+        ArrTemp = SplitComma(posStrXY)
+        If UBound(ArrTemp) = 1 Then 
+        	posX = ArrTemp(0)
+        	posY = ArrTemp(1)
+       	End If
+    End If
+    
+    If posY <> null Then 
+		ShowMessage msgStr, showMs, posX, posY
+	else
+		ShowMessage msgStr, showMs
+    End If
+	TracePrint msgStr
+End Sub
+Sub MsgXy(msgStr,showMs,posX,posY)
+	ShowMessage msgStr, showMs, posX, posY
+	TracePrint msgStr
+End Sub
 Sub DelayRnd(BaseDelay,RndDelay)
     Delay BaseDelay + RndDelay*Rnd()
 End Sub
 Function RndRange(min,max)
 	RndRange = Int((max - min + 1) * Rnd() + min)
 End Function
+
+
+'-----------------------------------------------------------------------------------------
 
 '-----------------------------------------------------------------------------------------
 
@@ -342,7 +366,7 @@ End Function
 
 '-----------------------------------------------------------------------------------------
 'PRCN 960p
-// Main Loop
+'Main Loop
 Dim curPage
 curPage = ""
 
@@ -367,38 +391,35 @@ While True
 		EndScript
 	ElseIf Find({pic:"Runa_Battle_861,429,798,419..png"}) Then
 	
-	End If
-	
 	'--------
 	
 	'BattleEnd
-	WinPage_Tap_NextPageBtn
-	ResultItemsPage_Tap_BattleAgainBtn
-	CheckBattleAgainMsgbox_Tap_YesBtn 
+	ElseIf WinPage_Tap_NextPageBtn Then
+	ElseIf ResultItemsPage_Tap_BattleAgainBtn Then
+	ElseIf CheckBattleAgainMsgbox_Tap_YesBtn  Then
 	
 	'--------
-	ClearNewCharacterStory
+	ElseIf ClearNewCharacterStory Then
 	'JoinOnlineBattle
-	Explore 
-	Arena
-	Dungeon
+	ElseIf Explore Then
+	ElseIf Arena Then
+	ElseIf Dungeon Then
 	'ShopExp
 	
 	'ClanBattleStopScript
-	If Find({pic:"ClanBattlePage_67,38,111,32..png", tapMode:DoNothing}) Or _
+	ElseIf  Find({pic:"ClanBattlePage_67,38,111,32..png", tapMode:DoNothing}) Or _
 	    Find({pic:"ClanBattle_BattleReady_103,454,161,463..png", tapMode:DoNothing}) Then 
 		EndScript
-	End If
 	
 
 	'Global
-	PlayerLvUpMsgbox
-	HeartStorySkip
-	ClanBattleCpCountMsgbox 
-	Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"})
+	ElseIf  PlayerLvUpMsgbox Then
+	ElseIf  HeartStorySkip Then
+	ElseIf  ClanBattleCpCountMsgbox  Then
+	ElseIf  Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
 	
 	'Login
-	If	   Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
+	ElseIf Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
 	ElseIf Find ({pic:"LoginAccountLink_352,362,386,375..png"}) Then
 	ElseIf Find ({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
 	ElseIf Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"}) Then
@@ -605,7 +626,7 @@ Dim ExploreManaClear = False
 Function Explore()
 	Explore = true
 	If (ExploreExpClear <> True Or ExploreManaClear <> True) And _
-		(Find({Pic:"Explore_703,94,771,156..png"}) Or Find({Pic:"Explore_689,90,785,183..png"})) then
+		(Find({Pic:"Explore_703,94,771,156..png"}) Or Find({Pic:"Explore_689,90,785,183..png"}) Or Find({pic:"Explore_696,94,780,145..png"})) then
 	ElseIf ExploreExpClear <> True And Find({Pic:"Explore_exp_538,140,641,281..png"}) Then
 	ElseIf ExploreManaClear <> True And Find({Pic:"Explore_mana_758,143,850,260..png"}) then
 	ElseIf Find({Pic:"Explore_3Star_642,159,702,177..png"}) then
@@ -729,7 +750,7 @@ Function Dungeon
 End Function
 
 Function ClearNewCharacterStory
-
+	ClearNewCharacterStory = true
 	If IsStoryPage() Then 
 		'Character Story
 		If IsCharacterStoryPage_NewTag() Then 
@@ -754,15 +775,12 @@ Function ClearNewCharacterStory
 		TapRangeIfFindPic 481, 190, 528, 198, "Feature_NewStory_481,190,528,198..png", 494, 211, 871, 280
 		'LastNewStory (pic form Event Story)
 		TapRangeIfFindPic 481, 74, 528, 81, "Feature_LastNewStory_481,74,528,81..png", 497, 107, 816, 165
-		
-		
-	End If
-	
+
 	'Global -------
 	
-	StoryVoiceDownload_Tap_NoVoice 
+	ElseIf StoryVoiceDownload_Tap_NoVoice Then
 	
-	If IsInTheStory() Then 
+	ElseIf IsInTheStory() Then 
 		InTheStory_Tap_Skip 
 		If Not HasFind() Then 
 			TapRect 904,30,930,54
@@ -770,14 +788,15 @@ Function ClearNewCharacterStory
 	End If
 	
 	'Msgbox_StoryBrief
-	Find({Pic:"Msgbox_StoryBrief_441,138,515,153..png", Rect:"516,362,671,385"})
+	ElseIf Find({Pic:"Msgbox_StoryBrief_441,138,515,153..png", Rect:"516,362,671,385"}) Then
 	
 	'Msgbox_ConfirmReward
-	Find({Pic:"Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", Rect:"417,466,556,494"})
+	ElseIf Find({Pic:"Msgbox_CharacterStoryConfirmReward_440,33,515,51..png", Rect:"417,466,556,494"}) Then
 	'Msgbox GiRuTo Story Confirm Reward
-	Find({Pic:"Msgbox_GirutoStoryConfirmReward_439,78,518,95..png", Rect:"412,421,556,448"})
-	
-	
+	ElseIf Find({Pic:"Msgbox_GirutoStoryConfirmReward_439,78,518,95..png", Rect:"412,421,556,448"}) Then
+	Else 
+		ClearNewCharacterStory = false
+	End If
 	'TODO: In battle Conversation AutoTap
 End Function
 
@@ -807,7 +826,7 @@ Function IsNoNewCharacterRankStory
 	IsNoNewCharacterRankStory = NoNewRank8Story Or NoNewRankNStory
 End Function
 Function StoryVoiceDownload_Tap_NoVoice
-	TapRangeIfFindPic(420,139,537,155, "Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
+	StoryVoiceDownload_Tap_NoVoice = TapRangeIfFindPic(420,139,537,155, "Msgbox_StoryVoiceDownload_420,139,537,155..png",447,360,518,384)
 End Function
 Function IsInTheStory
 	IsInTheStory = FindPicFunc_v121(931,55,903,29, "Btn_StoryMenu_931,55,903,29..png")
