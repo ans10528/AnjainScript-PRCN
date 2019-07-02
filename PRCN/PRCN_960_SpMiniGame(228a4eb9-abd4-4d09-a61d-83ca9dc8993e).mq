@@ -326,7 +326,7 @@ End Function
 'Main Loop
 
 
-
+Dim UI_CharSelect = ReadUIConfig("CharSelect")
 
 
 'Timer -------------------------------------------------------------
@@ -423,7 +423,12 @@ While true
 	'If False Then 
 	'ElseIf find({pic:""}) Then
 	'menu
-	ElseIf find({pic:"SelectShizu_500,163,682,354..png"}) Then
+	ElseIf tryfind({pic:"SelectShizu_500,163,682,354..png"}) Then
+		If UI_CharSelect = 0 Then
+			TapXy 580,269 
+		Else
+			TapXy 827,251
+		End If
 		Delay 2000
 	ElseIf find({pic:"StartGame_530,419,593,449..png"}) Then
 		Delay 1000
