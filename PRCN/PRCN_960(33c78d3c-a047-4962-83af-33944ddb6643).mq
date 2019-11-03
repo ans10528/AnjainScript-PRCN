@@ -461,7 +461,7 @@ Function Arena
 		LastArenaType = "PArena"
 
 	'IF	
-	ElseIf Find({pic:"PArena_BattleEndReport_112,150,170,179..png", Dot:"812,492"}) Then 
+	ElseIf Find({pic:"PArena_BattleEndReport_764,194,828,223..png", Dot:"812,492"}) Then 
 	ElseIf Find({pic:"PArena_DefSuccessReport_441,36,516,49..png", Dot:"368,482"}) Then 
 	ElseIf Find({pic:"Arena_DefSuccessReport_443,139,514,152..png", Dot:"376,374"}) Then
 	ElseIf Find({pic:"Arena_RankUp_505,51,446,37..png", Dot:"476,477"}) Then
