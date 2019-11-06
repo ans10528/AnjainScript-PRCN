@@ -373,6 +373,8 @@ curPage = ""
 Dim scriptMode 'simBattleExp
 scriptMode = "simBattleExp"
 
+Dim AppName = "tw.sonet.princessconnect"
+RunApp AppName
 
 While True
 
@@ -413,6 +415,7 @@ While True
 	
 
 	'Global
+	ElseIf Find({pic:"HomePage_747,415,779,450..png",Dot:"484,502"}) Then
 	ElseIf  PlayerLvUpMsgbox() Then
 	ElseIf  HeartStorySkip() Then
 	ElseIf  ClanBattleCpCountMsgbox() Then
@@ -700,6 +703,9 @@ Function Dungeon
 		Delay 3000
 		TapXy 830,452
 	ElseIf DungeonPhase = "boss" And Find({pic:"MyTeam_3_762,400,830,422..png"}) Then
+	ElseIf DungeonPhase = "boss" And TryFind({pic:"Dungeon_Team3Dead_740,402,811,426..png"}) Then
+		SwipeAB 782, 412, 780, 294, 1000
+		TapXy 794,412
 	ElseIf Find({pic:"Dungeon_Failed_761,483,865,505..png"}) Then
 	ElseIf Find({pic:"Dungeon_clear_879,432,895,448..png", Dot:"38,27"}) Then
 		DungeonPhase = "clear"
@@ -707,43 +713,25 @@ Function Dungeon
 	
 	'climb
 	'If false Then 
-	ElseIf Find({pic:"Dungeon_Ex_756,297,909,389..png"}) Then
+	ElseIf Find({pic:"Dungeon_Ex2_788,272,868,340..png"}) Then
 	ElseIf Find({pic:"Dungeon_SelectConfirm_418,136,542,159..png",Dot:"582,372"}) Then
 	ElseIf Find({pic:"Dungeon_844,94,912,158..png"}) Then
 	ElseIf Find({pic:"Dungeon_858,109,903,139..png"}) Then
 	ElseIf IsDungeonPage() Then 
-		'EX Dungeon
+		'EX2 Dungeon
 		
 		'boss
-		If Find({pic:"Dungeon_5StepFeature_260,260,357,344..png"}) Then 
+		If Find({pic:"Dungeon_Ex2_Step5Boss_619,295,666,341..png"}) Then 
 			DungeonPhase = "boss"
 			Exit Function
 		End if
-		Find ({pic:"Dungeon_StepFeature_683,352,724,383..png"})
-		Find ({pic:"Dungeon_2StepFeature_586,320,651,387..png"})
-		Find ({pic:"Dungeon_3StepFeature_306,343,352,385..png"})
-		Find ({pic:"Dungeon_4StepFeature_660,339,718,391..png"})
+		Find ({pic:"Dungeon_Ex2_Step1_509,253,548,289..png"})
+		Find ({pic:"Dungeon_Ex2_Step2_681,290,715,325..png"})
+		Find ({pic:"Dungeon_Ex2_Step3_405,306,438,336..png"})
+		Find ({pic:"Dungeon_Ex2_Step4_337,269,371,299..png"})
 		
 		Dim direct
 		direct = Rnd() * 3
-		
-		'VH Dungeon
-		If FindPicFunc(304, 200, 594, 386, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-			TapIfFind 
-			Delay 300
-		End If
-		If FindPicFunc(33,215,214,303, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-			TapIfFind 
-			Delay 300
-		End If
-		If FindPicFunc(33,215,214,303, "Feature_DungeonChest2_+10,10..png",direct, 0.7) Then 
-			TapIfFind 
-			Delay 300
-		End If
-		If FindPicFunc(481,171,712,369, "Feature_DungeonChest1_+13,14..png",direct, 0.7) Then 
-			TapIfFind 
-			Delay 300
-		End If
 		
 	ElseIf TapRangeIfFindPic(597, 409, 597 + 73, 409 + 12, "PageFeature_DungeonNextEnemyInfo_597,409+73,12..png", 777, 445, 899, 465) Then
 	ElseIf Find({Pic:"Msgbox_Dungeon_BattleResult_441,33,505,52..png", Rect:"398,471,546,487"}) Then	
@@ -843,7 +831,7 @@ End Function
 
 'Dungeon ------------
 Function IsDungeonPage
-	IsDungeonPage = FindPicFunc_v121(491, 427, 491 + 116, 427 + 14, "PageFeature_Dungeon_491,427+116,14..png")
+	IsDungeonPage = TryFind({pic:"Dungeon_PageEx2_644,429,724,442..png"})
 End Function
 
 'BattleEnd ----------
