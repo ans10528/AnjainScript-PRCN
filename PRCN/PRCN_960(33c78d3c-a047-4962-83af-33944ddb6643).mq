@@ -416,23 +416,26 @@ While True
 
 	'Global
 	ElseIf Find({pic:"HomePage_747,415,779,450..png",Dot:"484,502"}) Then
-	ElseIf  PlayerLvUpMsgbox() Then
-	ElseIf  HeartStorySkip() Then
-	ElseIf  ClanBattleCpCountMsgbox() Then
-	ElseIf  Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
+	ElseIf PlayerLvUpMsgbox() Then
+	ElseIf HeartStorySkip() Then
+	ElseIf ClanBattleCpCountMsgbox() Then
+	ElseIf Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
+	
 	
 	'Login
 	ElseIf Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
 	ElseIf Find ({pic:"LoginAccountLink_352,362,386,375..png"}) Then
 	ElseIf Find ({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
 	ElseIf Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"}) Then
-	ElseIf Find({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
-
+	ElseIf Find ({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
 	
 	'DailyMission
 	ElseIf Find({pic:"Page_DailyMission_68,18,109,38..png", tapMode:DoNothing}) Then 
 		'SwipeAB 384,305,389,233
+	ElseIf Find({pic:""}) Then 
 	End If
+	
+	
 	
 	
 	ReleaseCapture
@@ -726,7 +729,7 @@ Function Dungeon
 			Exit Function
 		End if
 		Find ({pic:"Dungeon_Ex2_Step1_509,253,548,289..png"})
-		Find ({pic:"Dungeon_Ex2_Step2_681,290,715,325..png"})
+		Find ({pic:"Dungeon_Ex2_Step2_681,288,725,331..png"})
 		Find ({pic:"Dungeon_Ex2_Step3_405,306,438,336..png"})
 		Find ({pic:"Dungeon_Ex2_Step4_337,269,371,299..png"})
 		
@@ -831,7 +834,7 @@ End Function
 
 'Dungeon ------------
 Function IsDungeonPage
-	IsDungeonPage = TryFind({pic:"Dungeon_PageEx2_644,429,724,442..png"})
+	IsDungeonPage = TryFind({pic:"Dungeon_PageEx2_650,426,729,441..png"})
 End Function
 
 'BattleEnd ----------
