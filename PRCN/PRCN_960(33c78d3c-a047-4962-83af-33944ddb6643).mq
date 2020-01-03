@@ -415,7 +415,7 @@ While True
 	
 
 	'Global
-	ElseIf Find({pic:"HomePage_747,415,779,450..png",Dot:"484,502"}) Then
+	ElseIf Find({pic:"HomePage_741,413,787,455..png",Dot:"484,502"}) Then
 	ElseIf PlayerLvUpMsgbox() Then
 	ElseIf HeartStorySkip() Then
 	ElseIf ClanBattleCpCountMsgbox() Then
@@ -425,7 +425,8 @@ While True
 	'Login
 	ElseIf Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
 	ElseIf Find ({pic:"LoginAccountLink_352,362,386,375..png"}) Then
-	ElseIf Find ({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
+	ElseIf Find({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
+	ElseIf Find ({pic:"Announcement_457,32,526,57..png",Dot:"485,478"}) Then
 	ElseIf Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"}) Then
 	ElseIf Find ({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
 	
@@ -708,7 +709,14 @@ Function Dungeon
 	ElseIf DungeonPhase = "boss" And Find({pic:"MyTeam_3_762,400,830,422..png"}) Then
 	ElseIf DungeonPhase = "boss" And TryFind({pic:"Dungeon_Team3Dead_740,402,811,426..png"}) Then
 		SwipeAB 782, 412, 780, 294, 1000
-		TapXy 794,412
+		DelayRnd 1000,200
+		TapXy 794, 412
+		DelayRnd 1000,200
+	ElseIf DungeonPhase = "boss" And TryFind({pic:"Dungeon_TeamList1_98,79,146,101..png"}) Then
+		SwipeAB 782, 412, 780, 294, 1000
+		DelayRnd 1000,200
+		TapXy 794, 412
+		DelayRnd 1000,200
 	ElseIf Find({pic:"Dungeon_Failed_761,483,865,505..png"}) Then
 	ElseIf Find({pic:"Dungeon_clear_879,432,895,448..png", Dot:"38,27"}) Then
 		DungeonPhase = "clear"
