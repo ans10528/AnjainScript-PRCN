@@ -376,6 +376,8 @@ scriptMode = "simBattleExp"
 Dim AppName = "tw.sonet.princessconnect"
 RunApp AppName
 
+Dim DailyClear = false
+
 While True
 
 	
@@ -431,6 +433,13 @@ While True
 	ElseIf Find ({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
 	
 	'DailyMission
+	ElseIf Not IsDailyClear() And Find({pic:"Menu_Quest_456,502,508,534..png",tapMode:DoNothing}) Then
+		'Go Daily
+		TapXy 475,508
+	ElseIf IsDailyClear() And Find({pic:"Menu_Quest_456,502,508,534..png", tapMode:DoNothing}) Then
+		'Go Clan
+		TapXy 689,429
+	ElseIf IsDailyClear() And Find({pic:"Menu_SelectedQuest_466,521,495,535..png",Dot:"87,511"}) Then
 	ElseIf Find({pic:"Page_DailyMission_68,18,109,38..png", tapMode:DoNothing}) Then 
 		'SwipeAB 384,305,389,233
 	ElseIf Find({pic:""}) Then 
@@ -449,6 +458,14 @@ EndScript
 '---------------------------------------- Script -----------------------------------------
 'Unschedulable script ----------
 
+Function IsDailyClear()
+	IsDailyClear = (ExploreExpClear = true) _
+					And (ExploreManaClear = true) _
+					And (DungeonPhase = "clear") _
+					And (ArenaClear = true) _
+					And (PArenaClear = true)
+End Function
+
 Dim LastArenaType
 Dim ArenaClear
 Dim PArenaClear
@@ -459,9 +476,9 @@ Function Arena
 	ElseIf Find({pic:"BattleReady_Sort_458,32,513,58..png", Dot:"362,478"}) Then
 	
 	ElseIf ArenaClear <> true And _
-		(Find({pic:"Arena_549,378,655,422..png"}) Or Find({pic:"Arena_574,371,627,394..png"}))  Then 
+		Find({pic:"Arena_Icon_580,385,627,414..png"})  Then 
 	ElseIf PArenaClear <> true And _
-		(Find({pic:"PArena_772,374,880,417..png"}) Or Find({pic:"PArena_813,374,880,405..png"})) Then 
+		Find({pic:"PArena_Icon_805,378,871,414..png"}) Then 
 	ElseIf Find({pic:"ArenaPage_69,22,127,34..png", Dot:"586,167"}) Then 
 		LastArenaType = "Arena"
 	ElseIf Find({pic:"PArenaPage_150,41,77,20..png", Dot:"586,167"}) Then
@@ -685,12 +702,9 @@ Function Dungeon
 	Dungeon = true
 	
 	If DungeonPhase = "clear" Then 
+		Dungeon = false
 		Exit Function
-	'End If
-	
 	'battle config
-	'FindPicFunc_v121(439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png")
-	'If HasFind() Then 	
 	ElseIf FindPicFunc_v121(439,34,518,51, "PageFeature_BeforeBattle_ConfigMember_439,34,518,51..png") Then 
 		'check member is full
 		
@@ -726,8 +740,7 @@ Function Dungeon
 	'If false Then 
 	ElseIf Find({pic:"Dungeon_Ex2_788,272,868,340..png"}) Then
 	ElseIf Find({pic:"Dungeon_SelectConfirm_418,136,542,159..png",Dot:"582,372"}) Then
-	ElseIf Find({pic:"Dungeon_844,94,912,158..png"}) Then
-	ElseIf Find({pic:"Dungeon_858,109,903,139..png"}) Then
+	ElseIf Find({pic:"Dungeon_842,104,914,154..png"}) Or Find({pic:"Dungeon_849,105,899,136..png"}) Then
 	ElseIf IsDungeonPage() Then 
 		'EX2 Dungeon
 		
