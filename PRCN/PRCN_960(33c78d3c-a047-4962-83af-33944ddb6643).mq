@@ -408,6 +408,7 @@ While True
 	ElseIf Explore() Then
 	ElseIf Arena() Then
 	ElseIf Dungeon() Then
+	ElseIf Investigate() Then
 	'ShopExp
 	
 	'ClanBattleStopScript
@@ -421,13 +422,15 @@ While True
 	ElseIf PlayerLvUpMsgbox() Then
 	ElseIf HeartStorySkip() Then
 	ElseIf ClanBattleCpCountMsgbox() Then
-	ElseIf Find ({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
+	ElseIf Find({pic:"ChangeDayMsg_441,142,516,149..png", Dot:"473,370"}) Then
+	ElseIf Find({pic:"SkipBattleResult_446,34,510,52..png", Dot:"491,473"}) Then
+	ElseIf Find({pic:"LimitedShop_433,138,525,158..png", Dot:"360,361"}) Then
 	
 	
 	'Login
 	ElseIf Find ({pic:"LoginMenu_34,497,56,520..png"}) Then
 	ElseIf Find ({pic:"LoginAccountLink_352,362,386,375..png"}) Then
-	ElseIf Find({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
+	ElseIf Find ({pic:"LoginKokoroBook_899,31,927,45..png"}) Then
 	ElseIf Find ({pic:"Announcement_457,32,526,57..png",Dot:"485,478"}) Then
 	ElseIf Find ({pic:"Announcement_CloseBtn_463,471,496,486..png"}) Then
 	ElseIf Find ({pic:"MsgNewDataDownload_440,137,514,154..png", Dot:"478,366"}) Then
@@ -463,7 +466,79 @@ Function IsDailyClear()
 					And (ExploreManaClear = true) _
 					And (DungeonPhase = "clear") _
 					And (ArenaClear = true) _
-					And (PArenaClear = true)
+					And (PArenaClear = true) _
+					And (InvestigateRemnantClear = true) _
+					And (InvestigateShrineClear = true)
+End Function
+
+
+Dim InvestigateRemnantClear = false
+Dim InvestigateRemnant2_Clear = false
+Dim InvestigateRemnant1_Clear = false
+Dim InvestigateShrineClear = false
+Dim InvestigateShrine2_Clear = false
+Dim InvestigateShrine1_Clear = false
+Function Investigate()
+	Investigate = true
+	If False Then 
+	ElseIf Find({pic:"Investigate_cnatQc_887,406,900,420..png",Dot:"665,453"}) Then 
+	ElseIf InvestigateRemnantClear <> true And Find({pic:"InvestigateRemnant_543,161,626,233..png"}) Then
+	ElseIf InvestigateRemnantClear <> true And TryFind({pic:"InvestigateRemnant_Detail_546,132,569,162..png"}) Then
+		Delay 1200
+		If InvestigateRemnant2_Clear <> true Then 
+			TapXy 551, 150
+			InvestigateRemnant2_Clear = true
+		ElseIf InvestigateRemnant1_Clear <> true Then
+			TapXy 557, 252
+			InvestigateRemnant1_Clear = true
+		Else 
+			InvestigateRemnantClear = true
+			TracePrint "InvestigateRemnantClear"
+			TapXy 42, 27
+			Exit Function
+		End If
+		
+		Delay 1500
+		For 8
+			TapRect 868,317,890,344
+			DelayRnd 100,60
+		Next
+		TapXy 754, 331
+		Delay 1200
+		TapXy 574, 369
+	ElseIf Find({pic:"genRestoreCheck_421,137,551,161..png", Dot:"376,370"}) Then
+		DelayRnd 1000, 200
+		TapXy 675, 450
+	ElseIf InvestigateShrineClear <> true And Find({pic:"InvestigateShrine_764,168,830,243..png"}) Then
+	ElseIf InvestigateShrineClear <> true And TryFind({pic:"InvestigateShrine_Detail_525,128,555,157..png"}) Then
+		Delay 1200
+		If InvestigateShrine2_Clear <> true Then 
+			TapXy 551, 150
+			InvestigateShrine2_Clear = true
+		ElseIf InvestigateShrine1_Clear <> true Then
+			TapXy 557, 252
+			InvestigateShrine1_Clear = true
+		Else 
+			InvestigateShrineClear = true
+			TracePrint "InvestigateShrineClear"
+			TapXy 42, 27
+			Exit Function
+		End If
+		
+		Delay 1500
+		For 8
+			TapRect 868,317,890,344
+			DelayRnd 100,60
+		Next
+		TapXy 754, 331
+		Delay 1200
+		TapXy 574, 369
+	ElseIf InvestigateRemnantClear = true And InvestigateShrineClear = true And TryFind({pic:"InvestigateShrine_764,168,830,243..png"}) Then
+		TapXy 39,29
+	ElseIf ((InvestigateRemnantClear <> true) Or (InvestigateShrineClear <> true)) And Find({pic:"investigate_705,240,749,269..png"}) Then
+	Else 
+		Investigate = false
+	End If
 End Function
 
 Dim LastArenaType
